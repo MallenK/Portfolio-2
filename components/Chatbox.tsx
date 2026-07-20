@@ -25,11 +25,11 @@ const PORTFOLIO_KNOWLEDGE = {
     focus: "Enterprise Scalable Products & Automation"
   },
   projects: [
-    { name: "Schneider Electric", key: "schneider", tech: "PHP, Docker, MySQL", desc: "Plataforma industrial crítica." },
-    { name: "Myker Academy", key: "myker", tech: "React, Tailwind, SEO", desc: "Web corporativa EdTech." },
-    { name: "Ateneu Unió", key: "ateneu", tech: "HTML, CSS, SEO", desc: "Digitalización de negocio local." },
-    { name: "AI Exam Assistant", key: "ai", tech: "OpenAI, GPT", desc: "Asistente de estudio inteligente." },
-    { name: "Cafeteras Review", key: "cafeteras", tech: "Angular, Supabase", desc: "Producto propio SEO." }
+    { name: "JP Preparation", key: "jpprep", tech: "React, TypeScript, PHP, CodeIgniter 4", desc: "Web y plataforma de gestión para escuela de fútbol." },
+    { name: "Myker Academy", key: "myker", tech: "React, TypeScript, Tailwind, SEO", desc: "Web corporativa EdTech." },
+    { name: "Cro&Txet", key: "crotxet", tech: "React, TypeScript, Tailwind, Vercel", desc: "E-commerce de bolsos hechos a mano." },
+    { name: "Schneider Electric", key: "schneider", tech: "PHP, CodeIgniter, MySQL, Docker", desc: "Plataforma industrial crítica." },
+    { name: "Project Architecture Planner", key: "ai", tech: "GPT, OpenAI", desc: "Asistente de arquitectura de software con IA." }
   ],
   stack: {
     frontend: "React, TypeScript, Tailwind, GSAP, Next.js",

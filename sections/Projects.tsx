@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { PortfolioContent } from '../types';
@@ -14,27 +14,12 @@ const Projects: React.FC<Props> = ({ content }) => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement[]>([]);
-  const [activeCardId, setActiveCardId] = useState<string | null>(null);
 
-  const projectOrder = ["02", "04", "01", "03", "05"];
+  const projectOrder = ["05", "02", "04", "01", "03"];
 
   const orderedProjects = [...content.items].sort(
     (a, b) => projectOrder.indexOf(a.id) - projectOrder.indexOf(b.id)
   );
-
-  console.log(
-    "[Projects Final Order]",
-    orderedProjects.map(p => `${p.id} ${p.title}`)
-  );
-
-  useEffect(() => {
-    if (activeCardId) {
-      console.log(
-        `%c[Projects Story] Focus on: ${activeCardId}`,
-        "background: #F5C400; color: #000; font-weight: bold; padding: 2px 4px;"
-      );
-    }
-  }, [activeCardId]);
 
   useEffect(() => {
     const mm = gsap.matchMedia();
@@ -84,12 +69,7 @@ const Projects: React.FC<Props> = ({ content }) => {
               start: "top top",
               end: () => `+=${window.innerHeight * (totalCards + 2)}`,
               scrub: 1,
-              anticipatePin: 1,
-              onLeave: () => {
-                console.log(
-                  "[Projects] Desktop Apple-style END — entering Experience clean"
-                );
-              }
+              anticipatePin: 1
             }
           });
 
@@ -99,25 +79,14 @@ const Projects: React.FC<Props> = ({ content }) => {
             { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }
           );
 
-          cards.forEach((card, index) => {
-            const project = orderedProjects[index];
-            const projectId = project.id;
-
-            console.log(
-              `%c[Projects Timeline] Card ${index}`,
-              "color:#F5C400;font-weight:bold",
-              project.id,
-              project.title
-            );
-
+          cards.forEach((card) => {
             tl.to(card, {
               y: 0,
               opacity: 1,
               scale: 1,
               pointerEvents: "auto",
               duration: 1,
-              ease: "power3.out",
-              onStart: () => setActiveCardId(projectId)
+              ease: "power3.out"
             });
 
             tl.to(card, { duration: 0.5 });
@@ -138,10 +107,6 @@ const Projects: React.FC<Props> = ({ content }) => {
             ease: "power2.in"
           });
         } else if (isMobile) {
-          console.log(
-            "[Projects] Mobile/Landscape Mode Active: Pinning Disabled"
-          );
-
           gsap.set(containerRef.current, {
             height: "auto",
             display: "block",
@@ -162,15 +127,12 @@ const Projects: React.FC<Props> = ({ content }) => {
             clearProps: "left,top,transform"
           });
 
-          cards.forEach((card, index) => {
-            const project = orderedProjects[index];
-
+          cards.forEach((card) => {
             ScrollTrigger.create({
               trigger: card,
               start: "top 85%",
               end: "bottom 20%",
               toggleActions: "play none none reverse",
-              onEnter: () => setActiveCardId(project.id),
               animation: gsap.to(card, {
                 opacity: 1,
                 y: 0,
@@ -222,6 +184,8 @@ const Projects: React.FC<Props> = ({ content }) => {
               <img
                 src={project.image}
                 alt={project.title}
+                loading="lazy"
+                decoding="async"
                 className="absolute inset-0 w-full h-full object-cover opacity-60 transition-all duration-700 group-hover:scale-105 group-hover:opacity-40"
               />
 

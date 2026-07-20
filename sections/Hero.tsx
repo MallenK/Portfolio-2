@@ -35,18 +35,6 @@ const Hero: React.FC<Props> = ({ content }) => {
     return () => clearInterval(interval);
   }, [content.subtitle]);
 
-  // DEBUG: Check spacing application
-  useEffect(() => {
-    const checkSpacing = () => {
-      if (window.innerWidth < 1024) {
-        console.log('[Hero Layout] mobile / tablet spacing applied');
-      }
-    };
-    checkSpacing();
-    window.addEventListener('resize', checkSpacing);
-    return () => window.removeEventListener('resize', checkSpacing);
-  }, []);
-
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.to(bgRef.current, {

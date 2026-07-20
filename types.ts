@@ -38,6 +38,7 @@ export interface PortfolioContent {
     projects: string;
     about: string;
     contact: string;
+    cv: string;
   };
   hero: {
     subtitle: string;
@@ -65,6 +66,7 @@ export interface PortfolioContent {
     label: string;
     intro: string;
     introHighlight1: string;
+    introConnector: string;
     introHighlight2: string;
     items: SkillGroup[];
   };

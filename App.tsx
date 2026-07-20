@@ -85,24 +85,6 @@ const AppContent: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isLoading]);
 
-  // DEBUG & VIEWPORT LOGGING
-  useEffect(() => {
-    const logViewport = () => {
-      const isMobile = window.innerWidth <= 768;
-      const isLandscape = window.innerWidth > window.innerHeight;
-      console.log('[Viewport Detection]', {
-        width: window.innerWidth,
-        height: window.innerHeight,
-        isMobile,
-        isLandscape,
-        mode: isMobile ? (isLandscape ? 'Mobile Landscape' : 'Mobile Portrait') : 'Desktop'
-      });
-    };
-    logViewport();
-    window.addEventListener('resize', logViewport);
-    return () => window.removeEventListener('resize', logViewport);
-  }, []);
-
   useEffect(() => {
     const interval = setInterval(() => {
       setProgress((prev) => {
@@ -193,6 +175,13 @@ const AppContent: React.FC = () => {
                    <div className="hidden md:flex gap-12 items-center">
                     <a href="#projects" className="text-[10px] uppercase tracking-[0.3em] font-bold text-white/60 hover:text-[#F5C400] transition-colors">{content.nav.projects}</a>
                     <a href="#about" className="text-[10px] uppercase tracking-[0.3em] font-bold text-white/60 hover:text-[#F5C400] transition-colors">{content.nav.about}</a>
+                    <a
+                      href={`${import.meta.env.BASE_URL}cv.pdf`}
+                      download="Sergi_Mallen_CV.pdf"
+                      className="text-[10px] uppercase tracking-[0.3em] font-bold text-white/60 hover:text-[#F5C400] transition-colors"
+                    >
+                      {content.nav.cv}
+                    </a>
                     <a href="#contact" className="px-8 py-3 bg-[#F5C400] text-black rounded-full text-[10px] uppercase tracking-widest font-black hover:bg-white transition-colors">{content.nav.contact}</a>
                   </div>
                   <div className="flex gap-3 text-[10px] font-black uppercase tracking-widest text-white">

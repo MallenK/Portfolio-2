@@ -48,7 +48,7 @@ const Skills: React.FC<Props> = ({ content }) => {
 
         <div className="max-w-3xl mx-auto text-center mb-24">
           <p className="text-3xl md:text-5xl font-light text-white leading-tight">
-            {content.intro} <span className="text-[#F5C400] font-black italic">{content.introHighlight1}</span> sólida y soluciones de <span className="text-[#F5C400] font-black">{content.introHighlight2}</span>.
+            {content.intro} <span className="text-[#F5C400] font-black italic">{content.introHighlight1}</span> {content.introConnector} <span className="text-[#F5C400] font-black">{content.introHighlight2}</span>.
           </p>
         </div>
         
