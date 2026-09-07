@@ -36,23 +36,31 @@ const Controls: React.FC<{
     const c = ref.current;
     if (!c) return;
     const A = CameraControlsImpl.ACTION;
-    c.mouseButtons.left = A.TRUCK;
-    c.mouseButtons.right = A.ROTATE;
+    // immersive orbit-first navigation:
+    //  · one finger / left drag  → orbit around the look point (full 3D)
+    //  · two fingers / right drag → pan (truck) the look point anywhere
+    //  · pinch / wheel            → zoom (dolly)
+    c.mouseButtons.left = A.ROTATE;
+    c.mouseButtons.right = A.TRUCK;
     c.mouseButtons.middle = A.DOLLY;
     c.mouseButtons.wheel = A.DOLLY;
-    c.touches.one = A.TOUCH_TRUCK;
-    c.touches.two = A.TOUCH_DOLLY_ROTATE;
-    c.touches.three = A.TOUCH_DOLLY_TRUCK;
-    c.dollyToCursor = true;
-    c.smoothTime = 0.42;
-    c.draggingSmoothTime = 0.14;
+    c.touches.one = A.TOUCH_ROTATE;
+    c.touches.two = A.TOUCH_DOLLY_TRUCK;
+    c.touches.three = A.TOUCH_TRUCK;
+    c.dollyToCursor = false;
+    c.smoothTime = 0.34;
+    c.draggingSmoothTime = 0.1;
+    c.azimuthRotateSpeed = 0.9;
+    c.polarRotateSpeed = 0.9;
+    c.truckSpeed = 2.2;
+    c.dollySpeed = 0.9;
     c.minDistance = MIN_D;
-    c.maxDistance = MAX_D;
-    c.minPolarAngle = 0.12;
-    c.maxPolarAngle = Math.PI - 0.12;
+    c.maxDistance = 34;
+    c.minPolarAngle = 0.02;
+    c.maxPolarAngle = Math.PI - 0.02;
     c.infinityDolly = false;
-    c.setBoundary(new THREE.Box3(new THREE.Vector3(-44, -34, -44), new THREE.Vector3(44, 34, 44)));
-    c.boundaryFriction = 0.35;
+    c.setBoundary(new THREE.Box3(new THREE.Vector3(-24, -20, -24), new THREE.Vector3(24, 20, 24)));
+    c.boundaryFriction = 0.4;
     c.boundaryEnclosesCamera = true;
     const bump = () => {
       atmos.lastInput = performance.now();
@@ -64,17 +72,6 @@ const Controls: React.FC<{
       c.removeEventListener('control', bump);
     };
   }, []);
-
-  // focused on a node → left drag / one finger also orbits it (easy inspect);
-  // roaming → left drag trucks the map (free pan)
-  useEffect(() => {
-    const c = ref.current;
-    if (!c) return;
-    const A = CameraControlsImpl.ACTION;
-    const inspecting = !!focusId;
-    c.mouseButtons.left = inspecting ? A.ROTATE : A.TRUCK;
-    c.touches.one = inspecting ? A.TOUCH_ROTATE : A.TOUCH_TRUCK;
-  }, [focusId]);
 
   useEffect(() => {
     const c = ref.current;
@@ -225,9 +222,10 @@ const Scene3D: React.FC<Props> = ({ content, theme, reducedMotion, focusId, acti
   const s = small();
 
   return (
-    <div className="fixed inset-0">
+    <div className="fixed inset-0" style={{ touchAction: 'none' }}>
       <Canvas
         dpr={[1, 1.75]}
+        style={{ touchAction: 'none' }}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         camera={{ fov: s ? 54 : 44, near: 0.1, far: 200, position: [0, s ? 1.5 : 0.4, s ? 30 : 17.5] }}
       >

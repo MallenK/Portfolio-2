@@ -101,7 +101,7 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
     },
     ui: {
       scroll: 'Baja para explorar',
-      mapHint: 'Arrastra para moverte · clic derecho o 2 dedos para orbitar · zoom con rueda',
+      mapHint: 'Arrastra para orbitar · clic derecho o 2 dedos para desplazar · zoom con rueda',
       open: 'Abrir',
       live: 'En producción',
       roleLabel: 'Rol',
@@ -269,7 +269,7 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
     },
     ui: {
       scroll: 'Baixa per explorar',
-      mapHint: 'Arrossega per moure’t · clic dret o 2 dits per orbitar · zoom amb la roda',
+      mapHint: 'Arrossega per orbitar · clic dret o 2 dits per moure’t · zoom amb la roda',
       open: 'Obrir',
       live: 'En producció',
       roleLabel: 'Rol',
@@ -437,7 +437,7 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
     },
     ui: {
       scroll: 'Scroll to explore',
-      mapHint: 'Drag to move · right-click or 2 fingers to orbit · wheel to zoom',
+      mapHint: 'Drag to orbit · right-click or 2 fingers to pan · scroll to zoom',
       open: 'Open',
       live: 'In production',
       roleLabel: 'Role',
