@@ -1,9 +1,4 @@
 import { useEffect, useState } from 'react';
-import Lenis from 'lenis';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
 
 export type Theme = 'dark' | 'light';
 
@@ -36,27 +31,4 @@ export function useReducedMotion() {
     return () => mq.removeEventListener('change', fn);
   }, []);
   return rm;
-}
-
-/** Lenis smooth scroll + ScrollTrigger sync. Skipped under reduced motion. */
-export function useSmoothScroll(enabled: boolean) {
-  useEffect(() => {
-    if (!enabled) return;
-    const lenis = new Lenis({
-      duration: 1.05,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      wheelMultiplier: 0.9
-    });
-    lenis.on('scroll', ScrollTrigger.update);
-    let raf = 0;
-    const loop = (time: number) => {
-      lenis.raf(time);
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-    return () => {
-      cancelAnimationFrame(raf);
-      lenis.destroy();
-    };
-  }, [enabled]);
 }

@@ -39,6 +39,7 @@ export interface PortfolioContent {
     role: string;
     tagline: string;
     location: string;
+    statement: string;
   };
   nav: {
     perfil: string;
@@ -60,6 +61,8 @@ export interface PortfolioContent {
     sending: string;
     sent: string;
     error: string;
+    close: string;
+    indexTitle: string;
   };
   about: {
     tag: string;

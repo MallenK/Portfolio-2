@@ -87,7 +87,9 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
       alias: 'MallenK',
       role: 'Full Stack Engineer · Integración de IA',
       tagline: 'Sistemas que aguantan en producción. Sin ruido.',
-      location: 'Colònia Güell, Barcelona'
+      location: 'Colònia Güell, Barcelona',
+      statement:
+        'MallenK es Sergi Mallén: Full Stack Engineer con 4+ años en producción. Backend con disciplina de empresa, frontend orientado a conversión e integración de IA. Cada web, un producto.'
     },
     nav: {
       perfil: 'Perfil',
@@ -99,7 +101,7 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
     },
     ui: {
       scroll: 'Baja para explorar',
-      mapHint: 'Arrastra el mapa · clic en un nodo para navegar',
+      mapHint: 'Toca un nodo',
       open: 'Abrir',
       live: 'En producción',
       roleLabel: 'Rol',
@@ -108,7 +110,9 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
       send: 'Enviar mensaje',
       sending: 'Enviando…',
       sent: 'Recibido. Respondo en menos de 24 h.',
-      error: 'No se pudo enviar. Escríbeme a sergimallenweb@gmail.com.'
+      error: 'No se pudo enviar. Escríbeme a sergimallenweb@gmail.com.',
+      close: 'Cerrar',
+      indexTitle: 'Manifiesto'
     },
     about: {
       tag: 'Perfil',
@@ -250,7 +254,9 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
       alias: 'MallenK',
       role: 'Full Stack Engineer · Integració d’IA',
       tagline: 'Sistemes que aguanten en producció. Sense soroll.',
-      location: 'Colònia Güell, Barcelona'
+      location: 'Colònia Güell, Barcelona',
+      statement:
+        'MallenK és Sergi Mallén: Full Stack Engineer amb 4+ anys en producció. Backend amb disciplina d’empresa, frontend orientat a conversió i integració d’IA. Cada web, un producte.'
     },
     nav: {
       perfil: 'Perfil',
@@ -262,7 +268,7 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
     },
     ui: {
       scroll: 'Baixa per explorar',
-      mapHint: 'Arrossega el mapa · clic en un node per navegar',
+      mapHint: 'Toca un node',
       open: 'Obrir',
       live: 'En producció',
       roleLabel: 'Rol',
@@ -271,7 +277,9 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
       send: 'Enviar missatge',
       sending: 'Enviant…',
       sent: 'Rebut. Responc en menys de 24 h.',
-      error: 'No s’ha pogut enviar. Escriu-me a sergimallenweb@gmail.com.'
+      error: 'No s’ha pogut enviar. Escriu-me a sergimallenweb@gmail.com.',
+      close: 'Tancar',
+      indexTitle: 'Manifest'
     },
     about: {
       tag: 'Perfil',
@@ -413,7 +421,9 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
       alias: 'MallenK',
       role: 'Full Stack Engineer · AI Integration',
       tagline: 'Systems that hold up in production. No noise.',
-      location: 'Colònia Güell, Barcelona'
+      location: 'Colònia Güell, Barcelona',
+      statement:
+        'MallenK is Sergi Mallén: a Full Stack Engineer with 4+ years in production. Enterprise-grade backend, conversion-focused frontend and AI integration. Every website, a product.'
     },
     nav: {
       perfil: 'Profile',
@@ -425,7 +435,7 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
     },
     ui: {
       scroll: 'Scroll to explore',
-      mapHint: 'Drag the map · click a node to navigate',
+      mapHint: 'Tap a node',
       open: 'Open',
       live: 'In production',
       roleLabel: 'Role',
@@ -434,7 +444,9 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
       send: 'Send message',
       sending: 'Sending…',
       sent: 'Received. I reply within 24 h.',
-      error: 'Could not send. Email me at sergimallenweb@gmail.com.'
+      error: 'Could not send. Email me at sergimallenweb@gmail.com.',
+      close: 'Close',
+      indexTitle: 'Manifesto'
     },
     about: {
       tag: 'Profile',

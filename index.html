@@ -2,28 +2,27 @@
 <html lang="es" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Sergi Mallén — MallenK · Full Stack Engineer</title>
-    <meta name="description" content="Portfolio de Sergi Mallén (MallenK), Full Stack Engineer. Sistemas escalables en producción, frontend orientado a conversión e integración de IA — navegables como un mapa." />
+    <meta name="description" content="Portfolio de Sergi Mallén (MallenK), Full Stack Engineer. Una sola pantalla: un mapa de nodos con toda la información en pop-ups. Sistemas que aguantan en producción." />
     <link rel="canonical" href="https://mallenk.github.io/Portfolio/" />
-    <meta name="theme-color" content="#0A0A0C" />
+    <meta name="theme-color" content="#000000" />
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://mallenk.github.io/Portfolio/" />
     <meta property="og:title" content="Sergi Mallén — MallenK · Full Stack Engineer" />
-    <meta property="og:description" content="Sistemas escalables en producción, frontend orientado a conversión e integración de IA." />
+    <meta property="og:description" content="Una sola pantalla: un mapa de nodos con toda la información. Sistemas que aguantan en producción." />
     <meta property="og:image" content="https://mallenk.github.io/Portfolio/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Sergi Mallén — MallenK · Full Stack Engineer" />
     <meta name="twitter:description" content="Full Stack Engineer · Barcelona · Sistemas que aguantan en producción." />
     <meta name="twitter:image" content="https://mallenk.github.io/Portfolio/og-image.png" />
 
-    <!-- Spline Sans (body) + Spline Sans Mono (interface / notation voice) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:wght@400;500;600&family=Spline+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230A0A0C'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%23E0619E'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23EDEAE3' stroke-opacity='0.5'/%3E%3C/svg%3E">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%23FDE100'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23FDE100' stroke-opacity='0.45'/%3E%3C/svg%3E">
 
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -38,7 +37,6 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-BGKJGJPGGZ');
-      // restore theme before paint to avoid a flash
       try {
         var t = localStorage.getItem('portfolio-theme');
         if (t) document.documentElement.setAttribute('data-theme', t);
@@ -48,28 +46,28 @@
 
   <body>
     <!--
-    IMPECCABLE DIRECTION CONTRACT — canon path (user pinned nicoborja.com as the reference)
-    THESIS: The portfolio opens as one living constellation — Sergi's work as a navigable map
-      of connected nodes on a starfield, not a stack of hero + cards. Refuses the accent-colour
-      icon-grid portfolio and the kinetic-type dark hero. "Net results. No noise."
-    OWN-WORLD: Near-black ink (#0A0A0C) under a faint starfield. Bone text (#EDEAE3 / dim
-      #9A978F). ONE accent — a restrained magenta (#E0619E) — on active nodes, live-state
-      labels, focus and hover only; never as fill or decoration. Spline Sans Mono, wide-tracked
-      uppercase, is the interface voice (labels, nav, the wordmark); Spline Sans carries body
-      copy. Hairline rules (#23232B) divide; nothing else is ornament. Light and dark themes
-      both first-class, toggled top-right.
-    STORY: A recruiter, a client and a developer land on the same map. The centre node is
-      MallenK; primary nodes — Perfil, Proyectos, Experiencia, Servicios, Contacto — orbit it,
-      with real project and company names as satellites. Click a node → the page scrolls to
-      that section, each one a quiet, scannable block in the same technical language. Contact
-      closes it. Easter eggs stay hidden in the map.
-    FIRST VIEWPORT: Full-bleed starfield canvas. A slow force-settled constellation centred
-      slightly high; "SERGI MALLÉN" in wide mono caps across the middle with "MallenK" and one
-      line of role beneath. Node labels in small tracked mono. Lang + theme toggle top-right;
-      "MallenK" wordmark top-left. A single hairline scroll cue lower-centre. No card, no button row.
-    FORM: canon of the minimal-WebGL-map personal site, played straight, benchmarked against
-      nicoborja.com and the Awwwards personal-portfolio field. 2D canvas (starfield + spring
-      constellation) for crispness and GH-Pages budget; no three.js.
+    IMPECCABLE DIRECTION CONTRACT — brief-pinned (structure from option B; palette Borussia
+    Dortmund; type Montserrat)
+    THESIS: The portfolio is one full-screen map — no scroll, no sections. Every piece of
+      information lives on a node; clicking a node opens its pop-up with the full content.
+      The interface is the map. Refuses the landing page with linked sections.
+    OWN-WORLD: Pure black ground (#000000 / #0C0C0C), bone text (#F2F2F2 / dim #9A9A9A), one
+      accent — BVB yellow #FDE100 — rationed to the active node, its lit edges, live markers,
+      focus and hover. Hairlines (#222) divide. Montserrat throughout: 700/800 uppercase and
+      tracked for the wordmark, node labels and pop-up headers; 400/500 for body. A denser,
+      higher-contrast starfield is the visible atmosphere the map floats in. Light theme keeps
+      the yellow as fills/markers only, with a readable gold for accent text.
+    STORY: A recruiter, a client and a developer open the same screen. They read the map,
+      tap MallenK (manifesto), Perfil, Proyectos, Experiencia, Servicios, Contacto — each a
+      pop-up carrying that section's full content. Contact's pop-up has the form. Easter eggs
+      hide in the map.
+    FIRST VIEWPORT (mobile-first): full-bleed black with a bright starfield. A compact
+      constellation in the upper-middle; nodes differ in size/weight/state (core largest with
+      a yellow ring; live nodes carry a marker). "SERGI MALLÉN" set below in tracked Montserrat
+      caps with role + tagline. Wordmark top-left; lang + theme + CV as small HUD corners.
+      One hint line: tap a node.
+    FORM: full-screen node map with per-element modals. Structure carried from the option-B
+      direction; palette and type replaced per the user's brief. 2D canvas, no three.js.
     FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
     -->
 

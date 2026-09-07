@@ -11,6 +11,7 @@ interface Props {
 
 type Palette = {
   star: string;
+  starAccent: string;
   node: string;
   edge: string;
   fg: string;
@@ -22,12 +23,13 @@ function readPalette(): Palette {
   const s = getComputedStyle(document.documentElement);
   const g = (v: string, fb: string) => s.getPropertyValue(v).trim() || fb;
   return {
-    star: g('--star', 'rgba(237,234,227,0.85)'),
-    node: g('--node', 'rgba(237,234,227,0.9)'),
-    edge: g('--edge', 'rgba(237,234,227,0.14)'),
-    fg: g('--fg', '#edeae3'),
-    fgDim: g('--fg-dim', '#9a978f'),
-    accent: g('--accent', '#e0619e')
+    star: g('--star', 'rgba(242,242,242,0.95)'),
+    starAccent: g('--star-accent', 'rgba(253,225,0,0.9)'),
+    node: g('--node', '#f2f2f2'),
+    edge: g('--edge', 'rgba(242,242,242,0.16)'),
+    fg: g('--fg', '#f2f2f2'),
+    fgDim: g('--fg-dim', '#9a9a9a'),
+    accent: g('--accent', '#fde100')
   };
 }
 
@@ -53,12 +55,13 @@ const Constellation: React.FC<Props> = ({ content, theme, reducedMotion, onNavig
     let H = 0;
     let dpr = Math.min(window.devicePixelRatio || 1, 2);
     let pal = readPalette();
+    let t0 = performance.now();
 
     const { nodes, edges } = buildGraph(content, small);
     const byId = new Map(nodes.map((n) => [n.id, n]));
 
-    // starfield
-    const stars: { x: number; y: number; z: number; r: number }[] = [];
+    type Star = { x: number; y: number; z: number; r: number; tw: number; accent: boolean };
+    let stars: Star[] = [];
 
     const pointer = { x: -9999, y: -9999, active: false };
     const pan = { x: 0, y: 0, tx: 0, ty: 0 };
@@ -66,9 +69,9 @@ const Constellation: React.FC<Props> = ({ content, theme, reducedMotion, onNavig
     let hover: GNode | null = null;
 
     const project = () => {
-      const scale = Math.min(W, H) * (small ? 0.44 : 0.42);
+      const scale = Math.min(W, H) * (small ? 0.44 : 0.38);
       const cx = W / 2;
-      const cy = small ? H * 0.33 : H * 0.46;
+      const cy = small ? H * 0.3 : H * 0.4;
       return { scale, cx, cy };
     };
 
@@ -82,14 +85,17 @@ const Constellation: React.FC<Props> = ({ content, theme, reducedMotion, onNavig
       canvas.height = H * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      stars.length = 0;
-      const count = Math.round((W * H) / 9000);
+      // denser, brighter starfield
+      stars = [];
+      const count = Math.round((W * H) / 620);
       for (let i = 0; i < count; i++) {
         stars.push({
           x: Math.random() * W,
           y: Math.random() * H,
-          z: 0.3 + Math.random() * 0.7,
-          r: Math.random() < 0.85 ? 0.6 : 1.2
+          z: 0.2 + Math.random() * 0.8,
+          r: Math.random() < 0.72 ? 0.7 : Math.random() < 0.95 ? 1.3 : 2,
+          tw: Math.random() * Math.PI * 2,
+          accent: Math.random() < 0.06
         });
       }
 
@@ -102,18 +108,13 @@ const Constellation: React.FC<Props> = ({ content, theme, reducedMotion, onNavig
       });
     };
 
-    const step = () => {
+    const step = (dt: number) => {
       const { scale, cx, cy } = project();
-
       if (!reducedMotion) {
         for (let i = 0; i < nodes.length; i++) {
           const n = nodes[i];
-          const homeX = cx + n.hx * scale;
-          const homeY = cy + n.hy * scale;
-          n.vx += (homeX - n.x) * 0.02;
-          n.vy += (homeY - n.y) * 0.02;
-
-          // gentle mutual repulsion (local)
+          n.vx += (cx + n.hx * scale - n.x) * 0.02;
+          n.vy += (cy + n.hy * scale - n.y) * 0.02;
           for (let j = i + 1; j < nodes.length; j++) {
             const m = nodes[j];
             const dx = n.x - m.x;
@@ -127,19 +128,16 @@ const Constellation: React.FC<Props> = ({ content, theme, reducedMotion, onNavig
               m.vy -= dy * f;
             }
           }
-
-          // pointer push
           if (pointer.active) {
             const dx = n.x - pointer.x;
             const dy = n.y - pointer.y;
             const d = Math.hypot(dx, dy);
-            if (d < 120 && d > 0.01) {
-              const f = (120 - d) / 120;
-              n.vx += (dx / d) * f * 0.9;
-              n.vy += (dy / d) * f * 0.9;
+            if (d < 110 && d > 0.01) {
+              const f = (110 - d) / 110;
+              n.vx += (dx / d) * f * 0.85;
+              n.vy += (dy / d) * f * 0.85;
             }
           }
-
           n.vx *= 0.86;
           n.vy *= 0.86;
           n.x += n.vx;
@@ -151,32 +149,37 @@ const Constellation: React.FC<Props> = ({ content, theme, reducedMotion, onNavig
           n.y = cy + n.hy * scale;
         });
       }
-
-      // pan easing (spring back toward drag target, which itself decays)
       pan.tx *= 0.92;
       pan.ty *= 0.92;
       pan.x += (pan.tx - pan.x) * 0.12;
       pan.y += (pan.ty - pan.y) * 0.12;
+      void dt;
     };
 
-    const draw = () => {
-      ctx.clearRect(0, 0, W, H);
-      const parX = pointer.active ? (pointer.x / W - 0.5) * 18 : 0;
-      const parY = pointer.active ? (pointer.y / H - 0.5) * 12 : 0;
-      const ox = pan.x + parX;
-      const oy = pan.y + parY;
+    const off = () => {
+      const parX = pointer.active ? (pointer.x / W - 0.5) * 16 : 0;
+      const parY = pointer.active ? (pointer.y / H - 0.5) * 10 : 0;
+      return { ox: pan.x + parX, oy: pan.y + parY };
+    };
 
-      // stars
-      for (const st of stars) {
-        ctx.globalAlpha = st.z * 0.5;
-        ctx.fillStyle = pal.star;
+    const draw = (now: number) => {
+      const time = (now - t0) / 1000;
+      ctx.clearRect(0, 0, W, H);
+      const { ox, oy } = off();
+
+      // starfield — brighter, gentle twinkle
+      for (const s of stars) {
+        const base = s.z * 0.8;
+        const tw = reducedMotion ? base : base * (0.72 + 0.28 * Math.sin(s.tw + time * 1.1));
+        ctx.globalAlpha = Math.max(0, Math.min(1, tw));
+        ctx.fillStyle = s.accent ? pal.starAccent : pal.star;
         ctx.beginPath();
-        ctx.arc(st.x + ox * st.z * 0.4, st.y + oy * st.z * 0.4, st.r, 0, Math.PI * 2);
+        ctx.arc(s.x + ox * s.z * 0.5, s.y + oy * s.z * 0.5, s.r, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.globalAlpha = 1;
 
-      const activeId = hover ? (hover.parent ?? hover.id) : null;
+      const activeId = hover ? hover.parent ?? hover.id : null;
 
       // edges
       ctx.lineWidth = 1;
@@ -187,7 +190,7 @@ const Constellation: React.FC<Props> = ({ content, theme, reducedMotion, onNavig
           activeId &&
           (e.a === activeId || e.b === activeId || e.a === hover?.id || e.b === hover?.id);
         ctx.strokeStyle = lit ? pal.accent : pal.edge;
-        ctx.globalAlpha = lit ? 0.55 : 1;
+        ctx.globalAlpha = lit ? 0.6 : 1;
         ctx.beginPath();
         ctx.moveTo(a.x + ox, a.y + oy);
         ctx.lineTo(b.x + ox, b.y + oy);
@@ -195,28 +198,30 @@ const Constellation: React.FC<Props> = ({ content, theme, reducedMotion, onNavig
       }
       ctx.globalAlpha = 1;
 
-      // nodes + labels
-      ctx.font = '10px "Spline Sans Mono", monospace';
+      ctx.font = `600 10px "Montserrat", sans-serif`;
       ctx.textBaseline = 'middle';
+
       for (const n of nodes) {
         const x = n.x + ox;
         const y = n.y + oy;
         const isHover = hover?.id === n.id;
         const inChain = activeId && (n.id === activeId || n.parent === activeId);
+        const hot = isHover || (inChain && n.kind !== 'satellite');
 
-        // node
+        // node dot
         ctx.beginPath();
         ctx.arc(x, y, n.r, 0, Math.PI * 2);
-        ctx.fillStyle = isHover || (inChain && n.kind !== 'satellite') ? pal.accent : pal.node;
-        ctx.globalAlpha = n.kind === 'satellite' && !inChain && !isHover ? 0.5 : 1;
+        ctx.fillStyle = hot ? pal.accent : pal.node;
+        ctx.globalAlpha = n.kind === 'satellite' && !inChain && !isHover ? 0.55 : 1;
         ctx.fill();
         ctx.globalAlpha = 1;
 
+        // core ring (always) + pulse on hover
         if (n.kind === 'core') {
-          ctx.strokeStyle = pal.fgDim;
-          ctx.globalAlpha = 0.5;
+          ctx.strokeStyle = pal.accent;
+          ctx.globalAlpha = 0.7;
           ctx.beginPath();
-          ctx.arc(x, y, n.r + 7, 0, Math.PI * 2);
+          ctx.arc(x, y, n.r + 8, 0, Math.PI * 2);
           ctx.stroke();
           ctx.globalAlpha = 1;
         }
@@ -226,15 +231,23 @@ const Constellation: React.FC<Props> = ({ content, theme, reducedMotion, onNavig
           ctx.arc(x, y, n.r + 6, 0, Math.PI * 2);
           ctx.stroke();
         }
+        // live marker (satellite in production)
+        if (n.live && !isHover) {
+          ctx.fillStyle = pal.accent;
+          ctx.beginPath();
+          ctx.arc(x + n.r + 3, y - n.r - 1, 1.6, 0, Math.PI * 2);
+          ctx.fill();
+        }
 
         // label
         const showLabel =
           n.kind === 'primary' || isHover || (inChain && n.kind === 'satellite');
         if (showLabel && n.kind !== 'core') {
-          const label = n.label.toUpperCase();
-          ctx.letterSpacing = '2px';
-          ctx.fillStyle = isHover ? pal.accent : pal.fgDim;
-          ctx.globalAlpha = n.kind === 'satellite' && !isHover ? 0.75 : 1;
+          ctx.letterSpacing = '1.5px';
+          ctx.fillStyle = isHover || hot ? pal.accent : pal.fgDim;
+          ctx.globalAlpha = n.kind === 'satellite' && !isHover ? 0.8 : 1;
+          let label = n.label.toUpperCase();
+          if (n.kind === 'primary' && n.count) label += `  ·  ${n.count}`;
           if (small && n.kind === 'primary') {
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
@@ -243,7 +256,7 @@ const Constellation: React.FC<Props> = ({ content, theme, reducedMotion, onNavig
           } else {
             const right = n.x >= project().cx;
             ctx.textAlign = right ? 'left' : 'right';
-            ctx.fillText(label, x + (right ? n.r + 8 : -(n.r + 8)), y);
+            ctx.fillText(label, x + (right ? n.r + 9 : -(n.r + 9)), y);
           }
           ctx.globalAlpha = 1;
           ctx.letterSpacing = '0px';
@@ -251,24 +264,20 @@ const Constellation: React.FC<Props> = ({ content, theme, reducedMotion, onNavig
       }
     };
 
-    const loop = () => {
-      step();
-      draw();
+    const loop = (now: number) => {
+      step(16);
+      draw(now);
       raf = requestAnimationFrame(loop);
     };
 
-    // ---- interaction ----
     const nodeAt = (mx: number, my: number): GNode | null => {
-      const parX = pointer.active ? (pointer.x / W - 0.5) * 18 : 0;
-      const parY = pointer.active ? (pointer.y / H - 0.5) * 12 : 0;
-      const ox = pan.x + parX;
-      const oy = pan.y + parY;
+      const { ox, oy } = off();
       let best: GNode | null = null;
-      let bestD = Infinity;
+      let bd = Infinity;
       for (const n of nodes) {
         const d = Math.hypot(mx - (n.x + ox), my - (n.y + oy));
-        if (d < n.r + 15 && d < bestD) {
-          bestD = d;
+        if (d < n.r + 16 && d < bd) {
+          bd = d;
           best = n;
         }
       }
@@ -282,7 +291,6 @@ const Constellation: React.FC<Props> = ({ content, theme, reducedMotion, onNavig
       pointer.x = mx;
       pointer.y = my;
       pointer.active = true;
-
       if (drag.on) {
         pan.tx = drag.ox + (mx - drag.sx);
         pan.ty = drag.oy + (my - drag.sy);
@@ -292,16 +300,11 @@ const Constellation: React.FC<Props> = ({ content, theme, reducedMotion, onNavig
       hover = nodeAt(mx, my);
       canvas.style.cursor = hover ? 'pointer' : 'grab';
     };
-
     const onDown = (e: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
       const mx = e.clientX - rect.left;
       const my = e.clientY - rect.top;
-      const hit = nodeAt(mx, my);
-      if (hit) {
-        hover = hit;
-        return;
-      }
+      if (nodeAt(mx, my)) return;
       drag.on = true;
       drag.moved = false;
       drag.sx = mx;
@@ -311,7 +314,6 @@ const Constellation: React.FC<Props> = ({ content, theme, reducedMotion, onNavig
       canvas.setPointerCapture(e.pointerId);
       canvas.style.cursor = 'grabbing';
     };
-
     const onUp = (e: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
       const mx = e.clientX - rect.left;
@@ -328,7 +330,6 @@ const Constellation: React.FC<Props> = ({ content, theme, reducedMotion, onNavig
       const hit = nodeAt(mx, my);
       if (hit) navRef.current(hit.target);
     };
-
     const onLeave = () => {
       pointer.active = false;
       pointer.x = -9999;
@@ -337,7 +338,7 @@ const Constellation: React.FC<Props> = ({ content, theme, reducedMotion, onNavig
     };
 
     resize();
-    loop();
+    raf = requestAnimationFrame(loop);
     window.addEventListener('resize', resize);
     canvas.addEventListener('pointermove', onMove);
     canvas.addEventListener('pointerdown', onDown);
@@ -354,21 +355,12 @@ const Constellation: React.FC<Props> = ({ content, theme, reducedMotion, onNavig
     };
   }, [content, reducedMotion, small]);
 
-  // repaint palette on theme flip without a full rebuild
   useEffect(() => {
-    // the loop reads pal once; simplest is a tiny delayed re-read via CSS transition end.
-    // Instead we force a remount-free refresh by dispatching resize.
     const t = setTimeout(() => window.dispatchEvent(new Event('resize')), 60);
     return () => clearTimeout(t);
   }, [theme]);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 h-full w-full touch-none"
-      aria-hidden
-    />
-  );
+  return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full touch-none" aria-hidden />;
 };
 
 export default Constellation;

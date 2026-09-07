@@ -2,14 +2,9 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { TRANSLATIONS } from './constants';
-import { useTheme, useReducedMotion, useSmoothScroll } from './hooks/useApp';
-import Nav from './components/Nav';
-import Hero from './sections/Hero';
-import About from './sections/About';
-import Projects from './sections/Projects';
-import Experience from './sections/Experience';
-import Services from './sections/Services';
-import Contact from './sections/Contact';
+import { useTheme, useReducedMotion } from './hooks/useApp';
+import MapScreen from './components/MapScreen';
+import Popup from './components/Popup';
 
 import { CheatProvider } from './context/CheatContext';
 import CheatSheet from './components/CheatSheet';
@@ -26,13 +21,13 @@ const AppContent: React.FC = () => {
   const { theme, toggle } = useTheme();
   const reducedMotion = useReducedMotion();
   const [loading, setLoading] = useState(true);
+  const [active, setActive] = useState<string | null>(null);
   const [lang, setLang] = useState<Lang>(() => {
     if (typeof window === 'undefined') return 'cat';
     return (localStorage.getItem('portfolio-lang') as Lang) || 'cat';
   });
 
   const content = useMemo(() => TRANSLATIONS[lang], [lang]);
-  useSmoothScroll(!reducedMotion);
 
   useEffect(() => {
     localStorage.setItem('portfolio-lang', lang);
@@ -40,12 +35,16 @@ const AppContent: React.FC = () => {
   }, [lang]);
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 1200);
+    const t = setTimeout(() => setLoading(false), 1100);
     return () => clearTimeout(t);
   }, []);
 
   const openChat = useCallback(() => {
-    (document.querySelector('[data-chat-toggle]') as HTMLButtonElement | null)?.click();
+    setActive(null);
+    setTimeout(
+      () => (document.querySelector('[data-chat-toggle]') as HTMLButtonElement | null)?.click(),
+      120
+    );
   }, []);
 
   return (
@@ -61,24 +60,38 @@ const AppContent: React.FC = () => {
           <motion.div
             key="loader"
             className="fixed inset-0 z-[100] flex items-center justify-center bg-bg"
-            exit={{ opacity: 0, transition: { duration: 0.5 } }}
+            exit={{ opacity: 0, transition: { duration: 0.45 } }}
           >
-            <span className="font-mono text-sm uppercase tracking-[0.4em] text-fg">
+            <span className="font-[var(--font-display)] text-sm font-bold uppercase tracking-[0.4em] text-fg">
               {content.meta.alias}
             </span>
           </motion.div>
         ) : (
-          <motion.div key="app" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-            <Nav content={content} lang={lang} setLang={setLang} theme={theme} toggleTheme={toggle} />
+          <motion.div
+            key="app"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div id="portfolio-content">
+              <MapScreen
+                content={content}
+                theme={theme}
+                toggleTheme={toggle}
+                lang={lang}
+                setLang={setLang}
+                reducedMotion={reducedMotion}
+                onOpen={setActive}
+              />
+            </div>
 
-            <main id="portfolio-content">
-              <Hero content={content} theme={theme} reducedMotion={reducedMotion} />
-              <About content={content.about} />
-              <Projects content={content.projects} ui={content.ui} />
-              <Experience content={content.experience} />
-              <Services content={content.services} onOpenChat={openChat} />
-              <Contact content={content.contact} ui={content.ui} meta={content.meta} />
-            </main>
+            <Popup
+              nodeId={active}
+              content={content}
+              onClose={() => setActive(null)}
+              onNavigate={(id) => setActive(id)}
+              onOpenChat={openChat}
+            />
 
             <CheatSheet />
             <Chatbox lang={lang} content={content as any} />
