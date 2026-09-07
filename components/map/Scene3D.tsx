@@ -164,9 +164,9 @@ const Graph: React.FC<Omit<Props, 'content'> & { data: ReturnType<typeof buildGr
 
   return (
     <>
-      <ambientLight intensity={theme === 'light' ? 0.95 : 0.42} />
-      <pointLight position={[8, 10, 12]} intensity={theme === 'light' ? 34 : 60} color="#fff6d0" />
-      <pointLight position={[-10, -6, 8]} intensity={24} color="#fde100" />
+      <ambientLight intensity={theme === 'light' ? 0.95 : 0.5} />
+      <pointLight position={[8, 10, 12]} intensity={theme === 'light' ? 34 : 58} color="#fff6d0" />
+      <pointLight position={[9, 7, 6]} intensity={theme === 'light' ? 8 : 14} color="#fde100" />
 
       <GraphGroup reducedMotion={reducedMotion}>
         {!reducedMotion &&

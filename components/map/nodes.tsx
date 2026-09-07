@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { Billboard, Edges, Html } from '@react-three/drei';
 import type { GNode3D } from './graph3d';
+import { iconForCategory, iconTexture, PERFIL_CATEGORIES } from './techIcons';
 
 const ACCENT = '#fde100';
 
@@ -114,6 +115,116 @@ const Singularity: React.FC<{ lit: boolean; theme: 'dark' | 'light' }> = ({ lit,
       <mesh material={lensMat}>
         <sphereGeometry args={[0.9, 40, 40]} />
       </mesh>
+    </group>
+  );
+};
+
+/* ---------- 3D tech medallion: a coin carrying the tech icon in relief ---------- */
+const TechIcon: React.FC<{
+  category: string;
+  index?: number;
+  size: number;
+  lit: boolean;
+  theme: 'dark' | 'light';
+  spin?: boolean;
+  spinSpeed?: number;
+}> = ({ category, index = 0, size, lit, theme, spin = true, spinSpeed = 0.35 }) => {
+  const g = useRef<THREE.Group>(null);
+  const icon = iconForCategory(category, index);
+  const tex = useMemo(() => iconTexture(icon.path, icon.title), [icon.path, icon.title]);
+  const light = theme === 'light';
+  // engraved medallion: bone coin with a dark mark; gold coin when lit
+  const coin = lit ? ACCENT : light ? '#e9e7dd' : '#dedcd2';
+  const rim = lit ? ACCENT : light ? '#b7b5aa' : '#8f8f85';
+  const mark = light ? '#101010' : '#131310';
+  useFrame((_, dt) => {
+    if (spin && g.current) g.current.rotation.y += dt * spinSpeed;
+  });
+  return (
+    <group ref={g} rotation={[0.18, 0, 0]} scale={size}>
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.5, 0.5, 0.16, 44]} />
+        <meshStandardMaterial
+          color={coin}
+          emissive={ACCENT}
+          emissiveIntensity={lit ? 0.45 : 0}
+          roughness={0.52}
+          metalness={0.2}
+        />
+      </mesh>
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.5, 0.022, 8, 44]} />
+        <meshStandardMaterial color={rim} emissive={ACCENT} emissiveIntensity={lit ? 0.6 : 0} roughness={0.4} metalness={0.3} />
+      </mesh>
+      {[0.085, -0.085].map((z, i) => (
+        <mesh key={i} position={[0, 0, z]} rotation={[0, i ? Math.PI : 0, 0]}>
+          <planeGeometry args={[0.8, 0.8]} />
+          <meshStandardMaterial map={tex} transparent alphaTest={0.35} color={mark} roughness={0.6} />
+        </mesh>
+      ))}
+    </group>
+  );
+};
+
+/* ---------- thin ring carrying N pips = skill count in that category ---------- */
+const CountRing: React.FC<{ count: number; lit: boolean; theme: 'dark' | 'light' }> = ({
+  count,
+  lit,
+  theme
+}) => {
+  const g = useRef<THREE.Group>(null);
+  useFrame((_, dt) => {
+    if (g.current) g.current.rotation.z += dt * 0.22;
+  });
+  const R = 0.36;
+  const line = lit ? ACCENT : theme === 'light' ? '#9a988c' : '#5f5f57';
+  const pip = lit ? ACCENT : theme === 'light' ? '#0a0a0a' : '#cecec4';
+  return (
+    <group ref={g} rotation={[Math.PI / 2 - 0.5, 0, 0]}>
+      <mesh>
+        <torusGeometry args={[R, 0.004, 6, 64]} />
+        <meshBasicMaterial color={line} toneMapped={false} transparent opacity={0.5} />
+      </mesh>
+      {Array.from({ length: Math.max(count, 1) }).map((_, i) => {
+        const a = (i / Math.max(count, 1)) * Math.PI * 2;
+        return (
+          <mesh key={i} position={[Math.cos(a) * R, Math.sin(a) * R, 0]}>
+            <sphereGeometry args={[0.02, 8, 8]} />
+            <meshBasicMaterial color={pip} toneMapped={false} />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+};
+
+/* ---------- Perfil core — a dense rotating nucleus of the 4 tech marks around
+     a wire seed; the seed answers hover/active, the marks stay bone so they read
+     as a "preview" distinct from the big satellite badges ---------- */
+const PerfilCluster: React.FC<{ lit: boolean; theme: 'dark' | 'light' }> = ({ lit, theme }) => {
+  const g = useRef<THREE.Group>(null);
+  useFrame((_, dt) => {
+    if (g.current) {
+      g.current.rotation.y += dt * 0.5;
+      g.current.rotation.x += dt * 0.14;
+    }
+  });
+  const seed = lit ? ACCENT : theme === 'light' ? '#0a0a0a' : '#e4e4dc';
+  return (
+    <group ref={g}>
+      <mesh>
+        <icosahedronGeometry args={[0.11, 0]} />
+        <meshBasicMaterial color={seed} toneMapped={false} wireframe transparent opacity={lit ? 0.9 : 0.5} />
+      </mesh>
+      {PERFIL_CATEGORIES.map((cat, i) => {
+        const a = (i / PERFIL_CATEGORIES.length) * Math.PI * 2;
+        const y = (i % 2 ? 1 : -1) * 0.11;
+        return (
+          <group key={cat} position={[Math.cos(a) * 0.36, y, Math.sin(a) * 0.36]} rotation={[0, -a, 0]}>
+            <TechIcon category={cat} index={i} size={0.19} lit={false} theme={theme} spin={false} />
+          </group>
+        );
+      })}
     </group>
   );
 };
@@ -386,13 +497,7 @@ export const PrimaryNode: React.FC<Common> = ({ n, theme, active, dim, onNode, o
       {...bind}
       onClick={(e) => { e.stopPropagation(); onNode(n.id, n.section); }}
     >
-      {n.shape === 'icosa' && (
-        <mesh ref={spin}>
-          <icosahedronGeometry args={[0.32, 0]} />
-          {mat}
-          <Edges color={lit ? ACCENT : theme === 'light' ? '#8a8a82' : '#5a5a54'} />
-        </mesh>
-      )}
+      {n.shape === 'icosa' && <PerfilCluster lit={lit} theme={theme} />}
       {n.shape === 'box' && (
         <mesh ref={spin}>
           <boxGeometry args={[0.42, 0.42, 0.42]} />
@@ -542,18 +647,12 @@ export const SatelliteNode: React.FC<Common> = ({ n, theme, active, dim, onNode,
         </group>
       )}
 
-      {/* --- SKILL: a little stack of cubes = the size of that part of the stack --- */}
+      {/* --- SKILL: an extruded 3D icon of the category's flagship tech + a
+             ring of pips = number of technologies in that category --- */}
       {n.variant === 'skill' && (
-        <group rotation={[0.3, 0.5, 0]}>
-          {Array.from({ length: Math.min(d.skillCount ?? 4, 6) }).map((_, i) => (
-            <mesh
-              key={i}
-              position={[((i % 2) - 0.5) * 0.13, Math.floor(i / 2) * 0.13 - 0.13, 0]}
-            >
-              <boxGeometry args={[0.11, 0.11, 0.11]} />
-              {chip}
-            </mesh>
-          ))}
+        <group>
+          <TechIcon category={n.label} size={0.44} lit={lit} theme={theme} />
+          <CountRing count={d.skillCount ?? 0} lit={lit} theme={theme} />
         </group>
       )}
 
@@ -573,7 +672,7 @@ export const SatelliteNode: React.FC<Common> = ({ n, theme, active, dim, onNode,
             n.variant === 'company'
               ? d.year
               : n.variant === 'skill'
-                ? `${d.skillCount} tecnologías`
+                ? `${iconForCategory(n.label).title} · ${d.skillCount} tecnologías`
                 : n.variant === 'project'
                   ? `${d.year}${d.live ? ' · en producción' : ''}`
                   : undefined

@@ -67,8 +67,11 @@ labels and pop-up headers; 400 / 500 for body. Tabular numerals on counts and pe
     a flowing fbm energy band with bright sparks over dark valleys, plus a fresnel rim — a
     fresnel halo shell, an inner bare-gold seed and a wide soft glow. Tumbles on two axes,
     breathes. Bloom pushes the band to a glow.
-  - **perfil** → an **icosahedron** (facets of a person); its skill children are little
-    **cube stacks** whose height is that category's tech count.
+  - **perfil** → a **rotating nucleus**: a wire icosa seed ringed by the four category
+    tech-marks in miniature. Its skill children are **3D tech medallions** — a bone coin
+    with the category's flagship technology engraved in relief (React / Node.js / Git /
+    Google Analytics, from `simple-icons` rendered to a canvas), wearing a thin ring of
+    pips = number of technologies in that category. Gold coin when hovered / active.
   - **proyectos** → a **cube** (something built); its children are **billboard chips showing
     the year**, live ones wearing an orbiting yellow ring.
   - **experiencia** → a **stack of rings** (strata / years); its children are company
@@ -117,7 +120,9 @@ pop-ups springing from a visible rest state, click sparks. All gated by `prefers
 ## Dependencies added (npm registry / official GitHub, MIT, no `postinstall`)
 
 `vgpu@0.4.0` (vercel-labs), `ogl@1.0.11`, `three@0.171.0`, `@react-three/fiber@8.17.10`,
-`@react-three/drei@9.117.3`, `@react-three/postprocessing@2.16.3`. React Bits components
+`@react-three/drei@9.117.3`, `@react-three/postprocessing@2.16.3`, `simple-icons@16`
+(CC0-1.0, brand icon path data — Perfil tech medallions; `--legacy-peer-deps` for the
+vgpu↔three peer, same as the rest). React Bits components
 copied into `components/reactbits/` from `DavidHDev/react-bits` (source reviewed — no eval,
 fetch, or dynamic import). Chunks: `three` (177 KB gz), `r3f` (117), `vgpu` (61), `ogl` (13),
 `motion` (86) — all lazy except `motion`; first paint is the shell + loader + painted bg.
