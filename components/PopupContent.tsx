@@ -3,6 +3,7 @@ import emailjs from '@emailjs/browser';
 import { PortfolioContent } from '../types';
 import { SOCIAL_LINKS } from '../constants';
 import { Reveal, useCopy } from './ui';
+import ShinyText from './reactbits/ShinyText';
 
 interface Props {
   nodeId: string;
@@ -96,9 +97,9 @@ const Proyectos: React.FC<Props> = ({ content }) => {
                   {p.title}
                 </h3>
                 {p.live && (
-                  <span className="flex items-center gap-1.5 font-[var(--font-display)] text-[10px] font-semibold uppercase tracking-[0.16em] text-accentink">
+                  <span className="flex items-center gap-1.5 font-[var(--font-display)] text-[10px] font-semibold uppercase tracking-[0.16em]">
                     <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-                    {ui.live}
+                    <ShinyText text={ui.live} color="#b58b00" shineColor="#fde100" speed={3.2} />
                   </span>
                 )}
               </div>
@@ -288,11 +289,8 @@ const Contacto: React.FC<Props> = ({ content }) => {
         <div>
           <p className="tag">{contact.directLabel}</p>
           <div className="mt-2 flex flex-wrap items-center gap-3">
-            <a
-              href={`mailto:${SOCIAL_LINKS.email}`}
-              className="text-lg text-fg transition-colors hover:text-accentink sm:text-xl"
-            >
-              {SOCIAL_LINKS.email}
+            <a href={`mailto:${SOCIAL_LINKS.email}`} className="text-lg text-fg transition-opacity hover:opacity-80 sm:text-xl">
+              <ShinyText text={SOCIAL_LINKS.email} color="#8a8a8a" shineColor="#fde100" speed={4} />
             </a>
             <button
               onClick={() => copy(SOCIAL_LINKS.email)}

@@ -6,6 +6,7 @@ import { useTheme, useReducedMotion } from './hooks/useApp';
 import MapScreen from './components/MapScreen';
 import Popup from './components/Popup';
 
+import ClickSpark from './components/reactbits/ClickSpark';
 import { CheatProvider } from './context/CheatContext';
 import CheatSheet from './components/CheatSheet';
 import TimeTravelFX from './components/EasterEggs/TimeTravelFX';
@@ -73,16 +74,18 @@ const AppContent: React.FC = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <div id="portfolio-content">
-              <MapScreen
-                content={content}
-                theme={theme}
-                toggleTheme={toggle}
-                lang={lang}
-                setLang={setLang}
-                reducedMotion={reducedMotion}
-                onOpen={setActive}
-              />
+            <div id="portfolio-content" className="h-[100svh]">
+              <ClickSpark sparkColor="#fde100" sparkCount={8} sparkRadius={18} sparkSize={9} duration={430}>
+                <MapScreen
+                  content={content}
+                  theme={theme}
+                  toggleTheme={toggle}
+                  lang={lang}
+                  setLang={setLang}
+                  reducedMotion={reducedMotion}
+                  onOpen={setActive}
+                />
+              </ClickSpark>
             </div>
 
             <Popup

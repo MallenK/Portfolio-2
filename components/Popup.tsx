@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PortfolioContent } from '../types';
 import PopupContent from './PopupContent';
+import AnimatedContent from './reactbits/AnimatedContent';
 
 interface Props {
   nodeId: string | null;
@@ -88,15 +89,13 @@ const Popup: React.FC<Props> = ({ nodeId, content, onClose, onNavigate, onOpenCh
             className="relative flex max-h-[92svh] w-full flex-col border border-hair bg-bg outline-none sm:max-h-[85vh] sm:max-w-2xl"
           >
             <header className="flex items-start justify-between gap-4 border-b border-hair px-5 py-4 sm:px-8 sm:py-6">
-              <div>
-                <div className="flex items-baseline gap-3">
-                  <span className="tag-n">{NUM[nodeId]}</span>
-                  <span className="tag">{titleFor(nodeId, content)}</span>
-                </div>
+              <div className="flex items-baseline gap-3">
+                <span className="tag-n">{NUM[nodeId]}</span>
+                <span className="tag">{titleFor(nodeId, content)}</span>
               </div>
               <button
                 onClick={onClose}
-                className="group -mr-1 -mt-1 flex items-center gap-2 p-1 font-[var(--font-display)] text-[11px] font-semibold uppercase tracking-[0.2em] text-fgdim transition-colors hover:text-accentink"
+                className="-mr-1 -mt-1 flex items-center gap-2 p-1 font-[var(--font-display)] text-[11px] font-semibold uppercase tracking-[0.2em] text-fgdim transition-colors hover:text-accentink"
               >
                 {content.ui.close}
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
@@ -105,13 +104,15 @@ const Popup: React.FC<Props> = ({ nodeId, content, onClose, onNavigate, onOpenCh
               </button>
             </header>
 
-            <div className="overflow-y-auto px-5 py-7 sm:px-8 sm:py-9">
-              <PopupContent
-                nodeId={nodeId}
-                content={content}
-                onNavigate={onNavigate}
-                onOpenChat={onOpenChat}
-              />
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              <AnimatedContent distance={24} duration={0.55} className="px-5 py-7 sm:px-8 sm:py-9">
+                <PopupContent
+                  nodeId={nodeId}
+                  content={content}
+                  onNavigate={onNavigate}
+                  onOpenChat={onOpenChat}
+                />
+              </AnimatedContent>
             </div>
           </motion.div>
         </motion.div>

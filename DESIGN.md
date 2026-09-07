@@ -1,106 +1,112 @@
-# Design — MAPA
+# Design — MAPA 3D
 
-<!-- impeccable:design v2 · brief-pinned · palette: Borussia Dortmund · type: Montserrat · code-led -->
+<!-- impeccable:design v3 · brief-pinned · BVB palette · Montserrat · vgpu + three + React Bits -->
 
 Recorded from the built world. Ground truth over intention.
 
 ## Concept
 
-The portfolio is **one full-screen map** — no scroll, no stacked sections. Every piece of
-information lives on a node of a constellation floating in a bright starfield; clicking a node
-opens its **pop-up** with the full content. The interface *is* the map.
+The portfolio is **one full-screen, orbit-and-zoom 3D map**. Every piece of information lives
+on a node of a constellation floating in a WebGPU nebula; clicking a node opens its **pop-up**
+with the full content. Three technologies, three jobs:
 
-Structure carried from the earlier "option B" direction (technical, one accent, hairlines,
-progressive detail). Palette and typeface replaced per the user's brief: **Borussia Dortmund**
-colours and **Montserrat**.
+| layer | tech | job |
+|---|---|---|
+| featured background | **vgpu** (`vercel-labs/vgpu`, WebGPU) | full-viewport WGSL nebula in BVB black + yellow, reacts to pointer and to camera zoom |
+| the map itself | **three.js / R3F** (`@react-three/fiber` 8, drei, postprocessing) | the 3D node graph — orbit, zoom, raycast, bloom, a scale-in "leap" on load |
+| sub-screens & links | **React Bits** (`Galaxy`, `AnimatedContent`, `ClickSpark`, `ShinyText`) | pop-up content reveal, click sparks, shimmering accents; Galaxy is also the WebGL fallback background |
 
-## Palette
+## Palette (Borussia Dortmund)
 
-Theme-aware; dark is the committed default, light is a muted variant.
+Theme-aware; dark default, light a muted variant. Tokens in `index.css`.
 
 | role | dark | light |
 |---|---|---|
-| background (`--bg`) | `#000000` | `#f4f3ee` |
-| raised (`--bg-2`) | `#0c0c0c` | `#eae8e0` |
+| background | `#000000` | `#f4f3ee` |
 | text (`--fg`) | `#f2f2f2` | `#0a0a0a` |
-| dim (`--fg-dim`) | `#9a9a9a` | `#565650` |
-| faint (`--fg-faint`) | `#5e5e5e` | `#8c8b83` |
-| hairline (`--hair`) | `#222222` | `#d6d4ca` |
-| **accent** (`--accent`) — fills / markers | `#fde100` (BVB yellow) | `#fde100` |
-| **accent-ink** (`--accent-ink`) — accent *text* | `#fde100` | `#8a6d00` (readable gold) |
+| dim / faint | `#9a9a9a` / `#5e5e5e` | `#565650` / `#8c8b83` |
+| hairline | `#222222` | `#d6d4ca` |
+| **accent** (fills / markers / nodes) | `#fde100` | `#fde100` |
+| **accent-ink** (accent as text) | `#fde100` | `#8a6d00` |
 
-The yellow is rationed: the active/hovered node and its lit edges, the "en producción"
-markers on live project satellites, the core node's ring, form focus, link hover, the active
-language. Never a background fill except the contact form's submit-hover. Everything else is
+Yellow is rationed to: the core node + its ring, hovered/active nodes and lit edges, live
+project markers, focus, hover, the active language, and the click sparks. Everything else is
 bone-on-black (or ink-on-paper) with hairline rules.
 
 ## Type
 
-**Montserrat**, one family, two registers:
-- 700 / 800, uppercase, wide tracking (0.12–0.24em) — the wordmark, HUD, node labels, pop-up
-  headers, section indices (`.tag`, `.tag-n`).
-- 400 / 500 — body copy inside pop-ups.
-- Tabular numerals (`.tnum`) on compared figures (periods, indices, counts).
+**Montserrat**, one family. 700 / 800 uppercase, wide tracking for the wordmark, HUD, node
+labels and pop-up headers; 400 / 500 for body. Tabular numerals on counts and periods.
 
-## The map (`components/map/`)
+## The background (`components/bg/`)
 
-- `Constellation.tsx` — one full-viewport 2D `<canvas>`. A **dense, bright, gently twinkling
-  starfield** (≈ one star per 620 px², a few yellow sparks) is the visible atmosphere. Over it,
-  a spring-settled node graph: **core** (largest, permanent yellow ring), **5 primaries**
-  (Perfil, Proyectos, Experiencia, Servicios, Contacto — each label carries a `· N` count),
-  and **satellites** fanned outward (skill groups, project titles, company names, service
-  names). Project satellites that are live in production show a small yellow marker.
-- `graph.ts` — hand-placed primaries (clear of the wordmark band); satellites capped and
-  scaled down on `< 640 px` so the mobile map stays legible.
-- Physics: spring-to-home + local repulsion + pointer push, heavy damping. Drag the canvas to
-  pan (springs back). Hover → yellow label + lit chain. Click a node → opens its pop-up.
-  `prefers-reduced-motion` → static layout, no rAF, no twinkle; interaction still works.
-- Palette is re-read from CSS vars on resize, so the theme toggle repaints the canvas.
+- `Background.tsx` decides at mount: **WebGPU** → `VgpuBackground`; else **WebGL** → React
+  Bits `Galaxy` (ogl, `hueShift ≈ 45`, saturated so the stars read yellow, `lightMode` on the
+  light theme); else a painted CSS gradient. A vgpu init failure downgrades to Galaxy live.
+- `VgpuBackground.tsx` — dynamically imports `vgpu`, opens a `surface` on a fixed canvas, runs
+  one `effect` (fbm nebula WGSL, `hsv2rgb` tinted to BVB yellow, star grain, ink-on-paper
+  branch for light) in a `frameLoop`. Uniforms (`time`, `aspect`, pointer, `zoom`, `hue`,
+  `light`, `reduce`) update per frame from `atmos`.
+- `atmos.ts` — a tiny out-of-React store the shader and the 3D scene share: pointer, camera
+  `zoom` (written by the R3F rig), accent hue, light flag.
 
-## Screen (`components/MapScreen.tsx`)
+## The 3D map (`components/map/`)
 
-`100svh`, `overflow: hidden` on the body — the whole site is one screen. HUD over the canvas:
-- top-left: `MALLENK` wordmark (opens the "Manifiesto" pop-up).
-- top-right: CV · language (es / cat / en) · theme toggle.
-- bottom: `SERGI MALLÉN` in Montserrat 800 caps + one tagline line + a single `Toca un nodo`
-  hint. Anchored low, clear of the constellation and the floating buttons.
+- `Scene3D.tsx` — an R3F `<Canvas>`, lazy-loaded. `graph3d.ts` lifts the 2D constellation into
+  3D: hand-placed x/y become the screen-plane spread, z is layered by node kind + a
+  deterministic jitter so there is real depth to fly through.
+- **Nodes**: emissive spheres. Core largest, permanent yellow ring (a thin `torusGeometry`),
+  slow spin. Primaries medium, labels via drei `<Html>` with a `· N` count. Satellites small;
+  live project satellites carry a tiny yellow marker. Hover / active → yellow + scale up +
+  lit edges (drei `<Line>`).
+- **Camera**: `<OrbitControls>` — drag to orbit, wheel / pinch to **zoom**, damping, polar
+  clamp, gentle auto-rotate, distance clamp. Responsive: phones start further back, widen the
+  FOV, lift + shrink the graph, and re-target OrbitControls so every cluster stays in frame.
+- **Leap**: `GraphGroup` scales + un-twists the whole graph in over ~1.2 s on mount (does not
+  fight OrbitControls, which owns the camera).
+- **Bloom**: `EffectComposer` + `Bloom` (subtle, threshold 0.62) so the yellow nodes glow;
+  dropped under `prefers-reduced-motion`.
+- `Rig` publishes camera distance → `atmos.zoom` so the background shader pushes in as you
+  zoom.
+- **Fallback**: no WebGL at all → the 2D `Constellation.tsx` (kept). Reduced motion → static
+  layout, no auto-rotate, no bloom, no leap; still orbit + zoom.
 
 ## Pop-ups (`components/Popup.tsx` + `PopupContent.tsx`)
 
-`role="dialog"`, `aria-modal`. Mobile: a bottom sheet, `max-h 92svh`, springs up. Desktop:
-a centred panel, `max-w 2xl`, `max-h 85vh`, bordered, body scrolls inside. Backdrop scrim
-(`--scrim`) + blur; click or `Esc` closes; focus moves into the panel and returns to the
-trigger on close; `body.popup-open` locks scroll; `z-index` sits above the easter-egg buttons.
+`role="dialog"`, `aria-modal`. Mobile bottom sheet / desktop centred panel, scrim + blur,
+`Esc` / backdrop close, focus managed, `body.popup-open` locks scroll, z above the easter-egg
+buttons. Header: index + name + `Cerrar ✕`. Content by node — core (manifesto + jump list),
+perfil, proyectos, experiencia, servicios, contacto (EmailJS form).
 
-Header: `NN` index + section name + `Cerrar ✕`. Bodies by node:
-- **core** — the manifesto statement + a list of the five sections (jump between pop-ups).
-- **perfil** — lead + body + the stack as a hairline list.
-- **proyectos** — 5 project entries (title → gold on hover, `en producción` marker, category ·
-  year · role, description, mono-tracked stack). Each links out. No images — the stock photos
-  are omitted rather than shown as if they were real screenshots.
-- **experiencia** — 5-entry timeline (period, role · company, `—`-led achievements).
-- **servicios** — 6 rows (number · title + inline `→` when it links · description). The AI row
-  closes the pop-up and opens the chatbox.
-- **contacto** — line, direct email + copy, socials, EmailJS form (real sending / sent / error
-  states), 3-up footer.
+**React Bits inside:** the content block rises in with `AnimatedContent` (gsap; patched to
+play on mount when already on screen); "en producción" markers and the contact email use
+`ShinyText` (a yellow shimmer); the whole map is wrapped in `ClickSpark` so every click —
+node, button, link — throws a short yellow spark.
 
 ## Motion
 
-One idea: the starfield and nodes breathing under the pointer. Pop-ups spring in from a
-visible resting state. No scroll animation (there is no scroll). Everything honours
-`prefers-reduced-motion`.
+The leap on load, the nebula drifting under the pointer, the background pushing in with zoom,
+pop-ups springing from a visible rest state, click sparks. All gated by `prefers-reduced-motion`.
+
+## Dependencies added (npm registry / official GitHub, MIT, no `postinstall`)
+
+`vgpu@0.4.0` (vercel-labs), `ogl@1.0.11`, `three@0.171.0`, `@react-three/fiber@8.17.10`,
+`@react-three/drei@9.117.3`, `@react-three/postprocessing@2.16.3`. React Bits components
+copied into `components/reactbits/` from `DavidHDev/react-bits` (source reviewed — no eval,
+fetch, or dynamic import). Chunks: `three` (177 KB gz), `r3f` (117), `vgpu` (61), `ogl` (13),
+`motion` (86) — all lazy except `motion`; first paint is the shell + loader + painted bg.
 
 ## Preserved
 
-Trilingual es / cat / en (`constants.tsx` → `TRANSLATIONS`, typed by `PortfolioContent`).
-EmailJS. GitHub Pages base path (`viewport-fit=cover` + `100svh` for mobile safe areas).
-The full easter-egg layer — dev console (`mallenk`), `CheatSheet`, Time Travel, Glitch,
-Messi, Navbar egg — intact; FABs rethemed to the black/yellow palette. `#portfolio-content`
-wrapper kept for their selectors.
+Trilingual es / cat / en. EmailJS. GitHub Pages base path. The full easter-egg layer
+(`mallenk` console, CheatSheet, Time Travel, Glitch, Messi, Navbar egg) — FABs rethemed.
+`#portfolio-content` wrapper kept for their selectors.
 
 ## Known residual polish
 
-- On the dense desktop map, a couple of satellite dots still graze their primary's label.
+- Node labels graze their satellite clusters at the default camera angle (orbiting separates
+  them); could add a small billboard offset.
+- `three` is pinned to 0.171 (not vgpu's optional peer 0.180) so `@react-three/postprocessing`
+  2.x still builds; the peer mismatch is a harmless npm warning.
 - CheatSheet / Chatbox panels still carry old zinc styling inside; only the FABs are rethemed.
-- Bundle is one 395 KB chunk (framer-motion + gsap + react + emailjs); could code-split.
-- No CV shown inside the map on the smallest phones except the top-right HUD link.
+- First interactive paint of the 3D scene waits on ~300 KB gz of GPU libs behind the loader.

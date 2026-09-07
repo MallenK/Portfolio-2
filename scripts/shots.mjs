@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer-core';
 import fs from 'fs';
 
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const URL = process.env.URL || 'http://localhost:3002/';
+const URL = process.env.URL || 'http://localhost:3004/';
 const OUT = '.impeccable/review';
 fs.mkdirSync(OUT, { recursive: true });
 
@@ -25,7 +25,7 @@ for (const t of targets) {
   page.on('console', (m) => m.type() === 'error' && errs.push('CONSOLE ' + m.text()));
 
   await page.goto(URL, { waitUntil: 'networkidle2', timeout: 60000 });
-  await new Promise((r) => setTimeout(r, 3200));
+  await new Promise((r) => setTimeout(r, 6500));
   await page.screenshot({ path: `${OUT}/${t.name}.png` });
 
   // open a popup by clicking near a primary node, then screenshot

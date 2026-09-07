@@ -101,7 +101,7 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
     },
     ui: {
       scroll: 'Baja para explorar',
-      mapHint: 'Toca un nodo',
+      mapHint: 'Toca un nodo · orbita · zoom',
       open: 'Abrir',
       live: 'En producción',
       roleLabel: 'Rol',
@@ -268,7 +268,7 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
     },
     ui: {
       scroll: 'Baixa per explorar',
-      mapHint: 'Toca un node',
+      mapHint: 'Toca un node · orbita · zoom',
       open: 'Obrir',
       live: 'En producció',
       roleLabel: 'Rol',
@@ -435,7 +435,7 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
     },
     ui: {
       scroll: 'Scroll to explore',
-      mapHint: 'Tap a node',
+      mapHint: 'Tap a node · orbit · zoom',
       open: 'Open',
       live: 'In production',
       roleLabel: 'Role',
