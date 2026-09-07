@@ -1,7 +1,5 @@
 import { PortfolioContent } from './types';
 
-// Datos comunes (imágenes, stacks técnicos que no requieren traducción)
-
 const IMAGES = {
   schneider:
     'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=1200',
@@ -14,635 +12,560 @@ const IMAGES = {
     'https://images.unsplash.com/photo-1537832816519-689ad163238b?auto=format&fit=crop&q=80&w=1200'
 };
 
-const COMMON_SKILLS = [
-  {
-    category: 'Frontend',
-    skills: ['HTML', 'CSS/SASS', 'JavaScript', 'TypeScript', 'React', 'Bootstrap']
-  },
-  {
-    category: 'Backend',
-    skills: ['PHP', 'CodeIgniter', 'Symfony', 'Node.js', 'MySQL', 'API REST']
-  },
-  {
-    category: 'Tools & Workflow',
-    skills: ['Git & Agile', 'WordPress']
-  },
-  {
-    category: 'Marketing & Analytics',
-    skills: ['Google Analytics & GTM', 'CRO']
-  }
-];
-
 export const SOCIAL_LINKS = {
   email: 'sergimallenweb@gmail.com',
-  linkedin: 'https://www.linkedin.com/feed/?trk=guest_homepage-basic_google-one-tap-submit',
+  linkedin: 'https://www.linkedin.com/in/sergi-mallen',
   github: 'https://github.com/MallenK',
   instagram: 'https://instagram.com/mallenk18',
   whatsapp: 'https://wa.me/34670248461'
 };
 
+const COMMON_SKILLS = [
+  { category: 'Frontend', skills: ['HTML', 'CSS / SASS', 'JavaScript', 'TypeScript', 'React', 'Bootstrap'] },
+  { category: 'Backend', skills: ['PHP', 'CodeIgniter', 'Symfony', 'Node.js', 'MySQL', 'API REST'] },
+  { category: 'Tooling', skills: ['Git', 'Docker', 'Agile', 'WordPress'] },
+  { category: 'Marketing & Data', skills: ['Google Analytics & GTM', 'CRO', 'SEO'] }
+];
+
+const projectBase = [
+  {
+    id: '01',
+    title: 'Schneider Electric',
+    year: '2024',
+    url: 'https://www.se.com/es/es/',
+    image: IMAGES.schneider,
+    live: true,
+    stack: ['PHP', 'CodeIgniter', 'MySQL', 'Git', 'Postman', 'Docker']
+  },
+  {
+    id: '02',
+    title: 'Myker Academy',
+    year: '2025',
+    url: 'https://mykeracademy.com/',
+    image: IMAGES.myker,
+    live: true,
+    stack: ['Google AI Studio', 'React', 'TypeScript', 'Tailwind', 'npm', 'SEO']
+  },
+  {
+    id: '03',
+    title: 'Project Architecture Planner',
+    year: '2024',
+    url: 'https://chatgpt.com/g/g-699de200e9c481919b02f30b73bc79bb-project-architecture-planner',
+    image: IMAGES.ai,
+    live: true,
+    stack: ['GPT', 'OpenAI', 'System Design']
+  },
+  {
+    id: '04',
+    title: 'Cro&Txet',
+    year: '2025',
+    url: 'https://www.croandtxet.cat/',
+    image: IMAGES.crotxet,
+    live: true,
+    stack: ['React', 'TypeScript', 'Tailwind', 'Vercel', 'EmailJS', 'i18n', 'SEO']
+  },
+  {
+    id: '05',
+    title: 'JP Preparation',
+    year: '2025',
+    url: 'https://www.jppreparation.com/',
+    image: IMAGES.jpprep,
+    live: true,
+    stack: ['React', 'TypeScript', 'Tailwind CSS', 'Vite', 'PHP', 'CodeIgniter 4', 'Docker']
+  }
+];
+
+const merge = (
+  loc: { category: string; role: string; description: string }[]
+) => projectBase.map((p, i) => ({ ...p, ...loc[i] }));
+
 export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
+  /* ---------------------------------------------------------- ES */
   es: {
-    nav: { projects: 'Proyectos', about: 'Perfil', contact: 'Contacto', cv: 'CV' },
-    hero: {
-      subtitle: 'Full Stack Developer • MallenK • AI Integration',
-      cta: 'Ver Proyectos',
-      scroll: 'Scroll to Explore'
+    meta: {
+      name: 'Sergi Mallén',
+      alias: 'MallenK',
+      role: 'Full Stack Engineer · Integración de IA',
+      tagline: 'Sistemas que aguantan en producción. Sin ruido.',
+      location: 'Colònia Güell, Barcelona'
+    },
+    nav: {
+      perfil: 'Perfil',
+      proyectos: 'Proyectos',
+      experiencia: 'Experiencia',
+      servicios: 'Servicios',
+      contacto: 'Contacto',
+      cv: 'CV'
+    },
+    ui: {
+      scroll: 'Baja para explorar',
+      mapHint: 'Arrastra el mapa · clic en un nodo para navegar',
+      open: 'Abrir',
+      live: 'En producción',
+      roleLabel: 'Rol',
+      copy: 'Copiar',
+      copied: 'Copiado',
+      send: 'Enviar mensaje',
+      sending: 'Enviando…',
+      sent: 'Recibido. Respondo en menos de 24 h.',
+      error: 'No se pudo enviar. Escríbeme a sergimallenweb@gmail.com.'
     },
     about: {
-      label: 'Profile / 01',
-      title: 'Desarrollador Full Stack con más de 4 años construyendo',
-      highlight: 'PRODUCTOS ESCALABLES',
-      p1: 'sitios corporativos y aplicaciones web funcionales para clientes y equipos de producto.',
-      p2: 'Experto en HTML, CSS, JavaScript, PHP y MySQL, con un sólido conocimiento tanto del desarrollo frontend como backend. Me involucro plenamente en cada proyecto, priorizando un código limpio, una estructura lógica y la eficiencia.'
-    },
-    services: {
-      label: 'Core / 02',
-      title: 'Servicios',
-      items: [
-        {
-          title: 'Web Corporativa Premium',
-          desc: 'Desarrollo de webs profesionales orientadas a conversión y marca.',
-          icon: '💎',
-          url: 'https://mykeracademy.com/'
-        },
-        {
-          title: 'SaaS & Apps a Medida',
-          desc: 'Construcción de plataformas escalables y productos digitales.',
-          icon: '🚀',
-          url: 'https://mallenk.github.io/Plantilla-Plataforma-Academia-Escolar/'
-        },
-        { title: 'Automatización Procesos', desc: 'Optimización de flujos internos y sistemas empresariales.', icon: '⚙️' },
-        {
-          title: 'Integración IA',
-          desc: 'Chatbots, análisis de datos y asistentes inteligentes.',
-          icon: '🧠',
-          action: 'open-ai-chat'
-        },
-        {
-          title: 'Consultoría y Auditoría Web',
-          desc: 'Análisis técnico, evaluación de rendimiento y arquitectura, auditoría de experiencia de usuario y definición de planes de mejora con recomendaciones accionables para productos digitales.',
-          icon: '🔍'
-        },
-        { title: 'Clases Programación/IA', desc: 'Sesiones prácticas personalizadas para aprender programación e inteligencia artificial.', icon: '🎓' }
-      ]
+      tag: 'Perfil',
+      lead: 'Cuatro años construyendo sitios corporativos y aplicaciones web para clientes y equipos de producto.',
+      body: 'Trabajo el frontend y el backend con la misma exigencia: HTML, CSS, JavaScript, TypeScript, PHP y MySQL. Me implico de lleno en cada proyecto priorizando código limpio, una estructura lógica y la eficiencia. Pienso cada web como un producto, no como una entrega.',
+      skillsTag: 'Stack',
+      skills: COMMON_SKILLS
     },
     projects: {
-      label: 'Portfolio / 03',
-      title: 'Proyectos',
-      items: [
+      tag: 'Proyectos',
+      title: 'Cinco encargos reales, en producción o entregados.',
+      items: merge([
         {
-          id: '01',
-          title: 'Schneider Electric',
-          category: 'Enterprise / Industria',
-          year: '2024',
+          category: 'Enterprise · Industria',
           role: 'Full Stack Engineer',
-          image: IMAGES.schneider,
-          url: 'https://www.se.com/es/es/',
-          stack: ['PHP', 'CodeIgniter', 'MySQL', 'Git', 'Postman', 'Docker'],
           description:
-            'Mantenimiento y evolución de plataforma industrial en entorno corporativo internacional. Desarrollo full-stack crítico en producción.'
+            'Mantenimiento y evolución de una plataforma industrial en un entorno corporativo internacional. Desarrollo full-stack crítico en producción.'
         },
         {
-          id: '02',
-          title: 'Myker Academy',
-          category: 'Corporativo / EdTech',
-          year: '2025',
+          category: 'Corporativo · EdTech',
           role: 'Lead Developer',
-          image: IMAGES.myker,
-          url: 'https://mykeracademy.com/',
-          stack: ['Google AI Studio', 'React', 'TypeScript', 'Tailwind', 'npm', 'SEO'],
           description:
-            'Diseño y desarrollo de web corporativa para escuela de idiomas con enfoque en captación de leads y posicionamiento de marca.'
+            'Diseño y desarrollo de la web corporativa de una escuela de idiomas, enfocada en captación de leads y posicionamiento de marca.'
         },
         {
-          id: '03',
-          title: 'Project Architecture Planner',
-          category: 'AI Architecture / Dev Tool',
-          year: '2024',
+          category: 'Arquitectura IA · Herramienta',
           role: 'AI Product Engineer',
-          image: IMAGES.ai,
-          url: 'https://chatgpt.com/g/g-699de200e9c481919b02f30b73bc79bb-project-architecture-planner',
-          stack: ['GPT', 'OpenAI', 'System Design'],
           description:
             'Asistente de arquitectura de software basado en IA que ayuda a diseñar la estructura técnica de proyectos digitales.'
         },
         {
-          id: '04',
-          title: 'Cro&Txet',
-          category: 'E-commerce / Handmade',
-          year: '2025',
+          category: 'E-commerce · Handmade',
           role: 'Full Stack Developer',
-          image: IMAGES.crotxet,
-          url: 'https://www.croandtxet.cat/',
-          stack: ['React', 'TypeScript', 'Tailwind', 'Vercel', 'EmailJS', 'i18n', 'SEO'],
           description:
             'Tienda online de bolsos hechos a mano. Experiencia de compra cuidada, catálogo visual, multi-idioma y enfoque en marca para convertir visitas en pedidos.'
         },
         {
-          id: '05',
-          title: 'JP Preparation',
-          category: 'Deportivo / Tecnificación',
-          year: '2025',
+          category: 'Deportivo · Tecnificación',
           role: 'Full Stack Developer',
-          image: IMAGES.jpprep,
-          url: 'https://www.jppreparation.com/',
-          stack: ['React', 'TypeScript', 'Tailwind CSS', 'Vite', 'PHP', 'CodeIgniter 4', 'Docker'],
           description:
-            'Diseño y desarrollo del sitio web y la plataforma de gestión de JP Preparation, escuela de tecnificación de fútbol. Un proyecto totalmente responsivo, con un diseño limpio y cuidado que refuerza la identidad de la escuela.'
-        },
-      ]
-    },
-    skills: {
-      label: 'Stack / 04',
-      intro: 'Arquitectura',
-      introHighlight1: 'Full Stack',
-      introConnector: 'sólida y soluciones de',
-      introHighlight2: 'Automatización e IA',
-      items: COMMON_SKILLS
+            'Sitio web y plataforma de gestión de JP Preparation, escuela de tecnificación de fútbol. Totalmente responsivo, con un diseño limpio que refuerza la identidad de la escuela.'
+        }
+      ])
     },
     experience: {
-      label: 'History / 05',
+      tag: 'Experiencia',
+      title: 'Cinco etapas, de las prácticas al puesto actual.',
       items: [
         {
           id: 'exp1',
           company: 'Tempel Group',
           role: 'Full Stack Developer',
-          period: '03/2026 – 06/2026',
+          period: '2026',
           achievements: [
-            'Desarrollo y mantenimiento del ecosistema web internacional, garantizando escalabilidad, consistencia de marca y correcta localización multilingüe',
-            'Diseño e implementación de landing pages y sitios corporativos optimizados para la conversión de campañas de marketing, eventos y lanzamientos de producto',
-            'Creación desde cero de aplicaciones web a medida para optimizar procesos internos, priorizando una arquitectura limpia y un backend eficiente',
-            'Stack: WordPress, PHP, MySQL, JavaScript, Tailwind CSS, REST API, Git'
+            'Desarrollo y mantenimiento del ecosistema web internacional, garantizando escalabilidad, consistencia de marca y localización multilingüe',
+            'Landing pages y sitios corporativos optimizados para la conversión de campañas, eventos y lanzamientos de producto',
+            'Aplicaciones web a medida desde cero para procesos internos, con arquitectura limpia y backend eficiente',
+            'WordPress, PHP, MySQL, JavaScript, Tailwind CSS, REST API, Git'
           ]
         },
         {
           id: 'exp2',
           company: 'Devinet',
           role: 'Full Stack Developer',
-          period: '02/2024 – 01/2026',
+          period: '2024 – 2026',
           achievements: [
-            'Desarrollo y mantenimiento de aplicaciones web escalables con código limpio para facilitar la evolución del producto',
-            'Colaboración proactiva en equipos multidisciplinarios bajo metodologías ágiles',
-            'Optimización de la interfaz de usuario mediante diseño responsivo y mejoras de UX',
-            'Stack: CodeIgniter, MySQL, AWS, API REST, jQuery, Desarrollo de IA'
+            'Aplicaciones web escalables con código limpio para facilitar la evolución del producto',
+            'Colaboración proactiva en equipos multidisciplinares bajo metodologías ágiles',
+            'Optimización de la interfaz mediante diseño responsivo y mejoras de UX',
+            'CodeIgniter, MySQL, AWS, API REST, jQuery, desarrollo de IA'
           ]
         },
         {
           id: 'exp3',
           company: 'Tenea',
           role: 'Backend Developer',
-          period: '10/2023 – 01/2024',
+          period: '2023 – 2024',
           achievements: [
             'Actualizaciones y mantenimiento del sistema para clientes corporativos',
             'Mejora de la fiabilidad y el rendimiento del backend',
-            'Stack: React, Node.js, RxJS, Symfony, MySQL'
+            'React, Node.js, RxJS, Symfony, MySQL'
           ]
         },
         {
           id: 'exp4',
           company: 'Vilax',
           role: 'Prácticas de desarrollo web',
-          period: '01/2023 – 09/2023',
+          period: '2023',
           achievements: [
-            'Creación y mantenimiento de sitios web utilizando tecnologías modernas',
-            'Gestión de productos en diversas plataformas de comercio electrónico',
+            'Creación y mantenimiento de sitios web con tecnologías modernas',
+            'Gestión de productos en varias plataformas de e-commerce',
             'Implementación de SEO para mejorar la visibilidad en buscadores',
-            'Stack: WordPress, PHP, Tailwind CSS, SEO, Figma, Google Analytics'
+            'WordPress, PHP, Tailwind CSS, SEO, Figma, Google Analytics'
           ]
         },
         {
           id: 'exp5',
           company: 'Farmacia y Salud Digital',
-          role: 'Prácticas en Operaciones Digitales',
-          period: '01/2022 – 06/2022',
+          role: 'Prácticas en operaciones digitales',
+          period: '2022',
           achievements: [
-            'Gestión de productos para múltiples tiendas de comercio electrónico',
-            'Implementación de mejoras SEO para optimizar la presencia online',
-            'Stack: SEO, WordPress, MySQL'
+            'Gestión de productos para múltiples tiendas de e-commerce',
+            'Mejoras SEO para optimizar la presencia online',
+            'SEO, WordPress, MySQL'
           ]
         }
       ]
     },
+    services: {
+      tag: 'Servicios',
+      title: 'Lo que puedes contratar. Freelance o para tu equipo.',
+      items: [
+        { title: 'Web corporativa premium', desc: 'Webs profesionales orientadas a conversión y marca.', url: 'https://mykeracademy.com/' },
+        { title: 'SaaS y apps a medida', desc: 'Plataformas escalables y productos digitales desde cero.', url: 'https://mallenk.github.io/Plantilla-Plataforma-Academia-Escolar/' },
+        { title: 'Automatización de procesos', desc: 'Optimización de flujos internos y sistemas de empresa.' },
+        { title: 'Integración de IA', desc: 'Chatbots, análisis de datos y asistentes inteligentes.', action: 'open-ai-chat' },
+        { title: 'Consultoría y auditoría web', desc: 'Análisis técnico, rendimiento, arquitectura y UX, con un plan de mejora accionable.' },
+        { title: 'Clases de programación / IA', desc: 'Sesiones prácticas personalizadas para aprender a programar e integrar IA.' }
+      ]
+    },
     contact: {
-      label: 'Collaborate / 06',
-      freelanceLabel: 'Servicios Freelance y Empresa',
-      socialLabel: 'Social',
-      formName: 'Tu Nombre',
-      formEmail: 'Tu correo electrónico',
-      formIdea: 'Proyecto / Idea',
-      btn: 'Enviar Solicitud',
-      footerText: 'Sergi Mallén © 2026',
-      footerLoc: 'Basado en Colònia Güell, Barcelona',
-      footerRole: 'Full Stack Logic'
+      tag: 'Contacto',
+      title: 'Cuéntame qué quieres construir.',
+      line: 'Disponible para proyectos freelance y para incorporarme a un equipo de producto.',
+      directLabel: 'Directo',
+      socialLabel: 'Redes',
+      formName: 'Tu nombre',
+      formEmail: 'Tu correo',
+      formIdea: 'Proyecto o idea',
+      footerLoc: 'Colònia Güell, Barcelona',
+      footerRole: 'Full Stack Engineer'
     }
   },
 
+  /* ---------------------------------------------------------- CAT */
   cat: {
-    nav: { projects: 'Projectes', about: 'Perfil', contact: 'Contacte', cv: 'CV' },
-    hero: {
-      subtitle: 'Full Stack Developer • MallenK • AI Integration',
-      cta: 'Veure Projectes',
-      scroll: 'Scroll to Explore'
+    meta: {
+      name: 'Sergi Mallén',
+      alias: 'MallenK',
+      role: 'Full Stack Engineer · Integració d’IA',
+      tagline: 'Sistemes que aguanten en producció. Sense soroll.',
+      location: 'Colònia Güell, Barcelona'
+    },
+    nav: {
+      perfil: 'Perfil',
+      proyectos: 'Projectes',
+      experiencia: 'Experiència',
+      servicios: 'Serveis',
+      contacto: 'Contacte',
+      cv: 'CV'
+    },
+    ui: {
+      scroll: 'Baixa per explorar',
+      mapHint: 'Arrossega el mapa · clic en un node per navegar',
+      open: 'Obrir',
+      live: 'En producció',
+      roleLabel: 'Rol',
+      copy: 'Copiar',
+      copied: 'Copiat',
+      send: 'Enviar missatge',
+      sending: 'Enviant…',
+      sent: 'Rebut. Responc en menys de 24 h.',
+      error: 'No s’ha pogut enviar. Escriu-me a sergimallenweb@gmail.com.'
     },
     about: {
-      label: 'Perfil / 01',
-      title: 'Desenvolupador Full Stack amb més de 4 anys construint',
-      highlight: 'PRODUCTES ESCALABLES',
-      p1: 'llocs corporatius i aplicacions web funcionals per a clients i equips de producte.',
-      p2: "Expert en HTML, CSS, JavaScript, PHP i MySQL, amb un sòlid coneixement tant del desenvolupament frontend com backend. M'implico plenament en cada projecte, prioritzant un codi net, una estructura lògica i l'eficiència."
-    },
-    services: {
-      label: 'Core / 02',
-      title: 'Serveis',
-      items: [
-        {
-          title: 'Web Corporativa Premium',
-          desc: 'Desenvolupament de webs professionals orientades a conversió i marca.',
-          icon: '💎',
-          url: 'https://mykeracademy.com/'
-        },
-        {
-          title: 'SaaS & Apps a Mida',
-          desc: 'Construcció de plataformes escalables i productes digitals.',
-          icon: '🚀',
-          url: 'https://mallenk.github.io/Plantilla-Plataforma-Academia-Escolar/'
-        },
-        {
-          title: 'Automatització Processos',
-          desc: 'Optimització de fluxos interns i sistemes empresarials.',
-          icon: '⚙️'
-        },
-        {
-          title: 'Integració IA',
-          desc: 'Chatbots, anàlisi de dades i assistents intel·ligents.',
-          icon: '🧠',
-          action: 'open-ai-chat'
-        },
-        {
-          title: 'Consultoria i Auditoria Web',
-          desc: "Anàlisi tècnic, avaluació de rendiment i arquitectura, auditoria d'experiència d'usuari i definició de plans de millora amb recomanacions accionables per a productes digitals.",
-          icon: '🔍'
-        },
-        {
-          title: 'Classes Programació/IA',
-          desc: 'Sessions pràctiques personalitzades per aprendre programació i intel·ligència artificial.',
-          icon: '🎓'
-        }
-      ]
+      tag: 'Perfil',
+      lead: 'Quatre anys construint llocs corporatius i aplicacions web per a clients i equips de producte.',
+      body: 'Treballo el frontend i el backend amb la mateixa exigència: HTML, CSS, JavaScript, TypeScript, PHP i MySQL. M’implico de ple en cada projecte prioritzant codi net, una estructura lògica i l’eficiència. Penso cada web com un producte, no com un lliurament.',
+      skillsTag: 'Stack',
+      skills: COMMON_SKILLS
     },
     projects: {
-      label: 'Portfolio / 03',
-      title: 'Projectes',
-      items: [
+      tag: 'Projectes',
+      title: 'Cinc encàrrecs reals, en producció o lliurats.',
+      items: merge([
         {
-          id: '01',
-          title: 'Schneider Electric',
-          category: 'Enterprise / Indústria',
-          year: '2024',
+          category: 'Enterprise · Indústria',
           role: 'Full Stack Engineer',
-          image: IMAGES.schneider,
-          url: 'https://www.se.com/es/es/',
-          stack: ['PHP', 'CodeIgniter', 'MySQL', 'Git', 'Postman', 'Docker'],
           description:
             'Manteniment i evolució d’una plataforma industrial en un entorn corporatiu internacional. Desenvolupament full-stack crític en producció.'
         },
         {
-          id: '02',
-          title: 'Myker Academy',
-          category: 'Corporatiu / EdTech',
-          year: '2025',
+          category: 'Corporatiu · EdTech',
           role: 'Lead Developer',
-          image: IMAGES.myker,
-          url: 'https://mykeracademy.com/',
-          stack: ['Google AI Studio', 'React', 'TypeScript', 'Tailwind', 'npm', 'SEO'],
           description:
-            'Disseny i desenvolupament de web corporativa per a una escola d’idiomes, amb enfocament en la captació de leads, el posicionament de marca i l’escalabilitat digital.'
+            'Disseny i desenvolupament de la web corporativa d’una escola d’idiomes, enfocada en la captació de leads i el posicionament de marca.'
         },
         {
-          id: '03',
-          title: 'Project Architecture Planner',
-          category: 'Arquitectura IA / Eina Dev',
-          year: '2024',
+          category: 'Arquitectura IA · Eina',
           role: 'AI Product Engineer',
-          image: IMAGES.ai,
-          url: 'https://chatgpt.com/g/g-699de200e9c481919b02f30b73bc79bb-project-architecture-planner',
-          stack: ['GPT', 'OpenAI', 'System Design'],
           description:
             'Assistent d’arquitectura de software basat en IA que ajuda a dissenyar l’estructura tècnica de projectes digitals.'
         },
         {
-          id: '04',
-          title: 'Cro&Txet',
-          category: 'E-commerce / Handmade',
-          year: '2025',
+          category: 'E-commerce · Handmade',
           role: 'Full Stack Developer',
-          image: IMAGES.crotxet,
-          url: 'https://www.croandtxet.cat/',
-          stack: ['React', 'TypeScript', 'Tailwind', 'Vercel', 'EmailJS', 'i18n', 'SEO'],
           description:
-            'Botiga online de bolsos fets a mà. Experiència de compra cuidada, catàleg visual, multi-idioma i enfocament en marca per convertir visites en comandes.'
+            'Botiga online de bosses fetes a mà. Experiència de compra cuidada, catàleg visual, multi-idioma i enfocament en marca per convertir visites en comandes.'
         },
         {
-          id: '05',
-          title: 'JP Preparation',
-          category: 'Esportiu / Tecnificació',
-          year: '2025',
+          category: 'Esportiu · Tecnificació',
           role: 'Full Stack Developer',
-          image: IMAGES.jpprep,
-          url: 'https://www.jppreparation.com/',
-          stack: ['React', 'TypeScript', 'Tailwind CSS', 'Vite', 'PHP', 'CodeIgniter 4', 'Docker'],
           description:
-            "Disseny i desenvolupament del lloc web i la plataforma de gestió de JP Preparation, escola de tecnificació de futbol. Un projecte totalment responsiu, amb un disseny net i acurat que reforça la identitat de l'escola."
-        },
-      ]
-    },
-    skills: {
-      label: 'Stack / 04',
-      intro: 'Arquitectura',
-      introHighlight1: 'Full Stack',
-      introConnector: 'sòlida i solucions de',
-      introHighlight2: 'Automatització i IA',
-      items: COMMON_SKILLS
+            'Lloc web i plataforma de gestió de JP Preparation, escola de tecnificació de futbol. Totalment responsiu, amb un disseny net que reforça la identitat de l’escola.'
+        }
+      ])
     },
     experience: {
-      label: 'History / 05',
+      tag: 'Experiència',
+      title: 'Cinc etapes, de les pràctiques al lloc actual.',
       items: [
         {
           id: 'exp1',
           company: 'Tempel Group',
           role: 'Full Stack Developer',
-          period: '03/2026 – 06/2026',
+          period: '2026',
           achievements: [
-            "Desenvolupament i manteniment de l'ecosistema web internacional, garantint l'escalabilitat, la consistència de marca i la correcta localització multilingüe",
-            'Disseny i implementació de landing pages i llocs corporatius optimitzats per a la conversió de campanyes de màrqueting, esdeveniments i llançaments de producte',
-            "Creació des de zero d'aplicacions web a mida per optimitzar processos interns, prioritzant una arquitectura neta i un backend eficient",
-            'Stack: WordPress, PHP, MySQL, JavaScript, Tailwind CSS, REST API, Git'
+            'Desenvolupament i manteniment de l’ecosistema web internacional, garantint escalabilitat, consistència de marca i localització multilingüe',
+            'Landing pages i llocs corporatius optimitzats per a la conversió de campanyes, esdeveniments i llançaments de producte',
+            'Aplicacions web a mida des de zero per a processos interns, amb arquitectura neta i backend eficient',
+            'WordPress, PHP, MySQL, JavaScript, Tailwind CSS, REST API, Git'
           ]
         },
         {
           id: 'exp2',
           company: 'Devinet',
           role: 'Full Stack Developer',
-          period: '02/2024 – 01/2026',
+          period: '2024 – 2026',
           achievements: [
-            "Desenvolupament i manteniment d'aplicacions web escalables amb codi net per facilitar l'evolució del producte",
-            "Col·laboració proactiva en equips multidisciplinaris sota metodologies àgils",
-            "Optimització de la interfície d'usuari mitjançant disseny responsiu i millores d'UX",
-            "Stack: CodeIgniter, MySQL, AWS, API REST, jQuery, Desenvolupament d'IA"
+            'Aplicacions web escalables amb codi net per facilitar l’evolució del producte',
+            'Col·laboració proactiva en equips multidisciplinaris sota metodologies àgils',
+            'Optimització de la interfície mitjançant disseny responsiu i millores d’UX',
+            'CodeIgniter, MySQL, AWS, API REST, jQuery, desenvolupament d’IA'
           ]
         },
         {
           id: 'exp3',
           company: 'Tenea',
           role: 'Backend Developer',
-          period: '10/2023 – 01/2024',
+          period: '2023 – 2024',
           achievements: [
             'Actualitzacions i manteniment del sistema per a clients corporatius',
             'Millora de la fiabilitat i el rendiment del backend',
-            'Stack: React, Node.js, RxJS, Symfony, MySQL'
+            'React, Node.js, RxJS, Symfony, MySQL'
           ]
         },
         {
           id: 'exp4',
           company: 'Vilax',
           role: 'Pràctiques de desenvolupament web',
-          period: '01/2023 – 09/2023',
+          period: '2023',
           achievements: [
-            'Creació i manteniment de llocs web utilitzant tecnologies modernes',
-            'Gestió de productes en diverses plataformes de comerç electrònic',
-            'Implementació de SEO per millorar la visibilitat en cercadors',
-            'Stack: WordPress, PHP, Tailwind CSS, SEO, Figma, Google Analytics'
+            'Creació i manteniment de llocs web amb tecnologies modernes',
+            'Gestió de productes en diverses plataformes d’e-commerce',
+            'Implementació de SEO per millorar la visibilitat als cercadors',
+            'WordPress, PHP, Tailwind CSS, SEO, Figma, Google Analytics'
           ]
         },
         {
           id: 'exp5',
           company: 'Farmacia y Salud Digital',
-          role: 'Pràctiques en Operacions Digitals',
-          period: '01/2022 – 06/2022',
+          role: 'Pràctiques en operacions digitals',
+          period: '2022',
           achievements: [
-            'Gestió de productes per a múltiples botigues de comerç electrònic',
-            'Implementació de millores SEO per optimitzar la presència online',
-            'Stack: SEO, WordPress, MySQL'
+            'Gestió de productes per a múltiples botigues d’e-commerce',
+            'Millores SEO per optimitzar la presència online',
+            'SEO, WordPress, MySQL'
           ]
         }
       ]
     },
+    services: {
+      tag: 'Serveis',
+      title: 'El que pots contractar. Freelance o per al teu equip.',
+      items: [
+        { title: 'Web corporativa premium', desc: 'Webs professionals orientades a conversió i marca.', url: 'https://mykeracademy.com/' },
+        { title: 'SaaS i apps a mida', desc: 'Plataformes escalables i productes digitals des de zero.', url: 'https://mallenk.github.io/Plantilla-Plataforma-Academia-Escolar/' },
+        { title: 'Automatització de processos', desc: 'Optimització de fluxos interns i sistemes d’empresa.' },
+        { title: 'Integració d’IA', desc: 'Chatbots, anàlisi de dades i assistents intel·ligents.', action: 'open-ai-chat' },
+        { title: 'Consultoria i auditoria web', desc: 'Anàlisi tècnic, rendiment, arquitectura i UX, amb un pla de millora accionable.' },
+        { title: 'Classes de programació / IA', desc: 'Sessions pràctiques personalitzades per aprendre a programar i integrar IA.' }
+      ]
+    },
     contact: {
-      label: 'Collaborate / 06',
-      freelanceLabel: 'Freelance i entorn corporatiu',
-      socialLabel: 'Social',
-      formName: 'El teu Nom',
-      formEmail: 'El teu correu electrònic',
-      formIdea: 'Projecte / Idea',
-      btn: 'Enviar Sol·licitud',
-      footerText: 'Sergi Mallén © 2026',
-      footerLoc: 'Basat a Colònia Güell, Barcelona',
-      footerRole: 'Full Stack Logic'
+      tag: 'Contacte',
+      title: 'Explica’m què vols construir.',
+      line: 'Disponible per a projectes freelance i per incorporar-me a un equip de producte.',
+      directLabel: 'Directe',
+      socialLabel: 'Xarxes',
+      formName: 'El teu nom',
+      formEmail: 'El teu correu',
+      formIdea: 'Projecte o idea',
+      footerLoc: 'Colònia Güell, Barcelona',
+      footerRole: 'Full Stack Engineer'
     }
   },
 
+  /* ---------------------------------------------------------- EN */
   en: {
-    nav: { projects: 'Projects', about: 'Profile', contact: 'Contact', cv: 'CV' },
-    hero: {
-      subtitle: 'Full Stack Developer • MallenK • AI Integration',
-      cta: 'View Projects',
-      scroll: 'Scroll to Explore'
+    meta: {
+      name: 'Sergi Mallén',
+      alias: 'MallenK',
+      role: 'Full Stack Engineer · AI Integration',
+      tagline: 'Systems that hold up in production. No noise.',
+      location: 'Colònia Güell, Barcelona'
+    },
+    nav: {
+      perfil: 'Profile',
+      proyectos: 'Work',
+      experiencia: 'Experience',
+      servicios: 'Services',
+      contacto: 'Contact',
+      cv: 'CV'
+    },
+    ui: {
+      scroll: 'Scroll to explore',
+      mapHint: 'Drag the map · click a node to navigate',
+      open: 'Open',
+      live: 'In production',
+      roleLabel: 'Role',
+      copy: 'Copy',
+      copied: 'Copied',
+      send: 'Send message',
+      sending: 'Sending…',
+      sent: 'Received. I reply within 24 h.',
+      error: 'Could not send. Email me at sergimallenweb@gmail.com.'
     },
     about: {
-      label: 'Profile / 01',
-      title: 'Full Stack Developer with 4+ years building',
-      highlight: 'SCALABLE PRODUCTS',
-      p1: 'corporate sites and functional web applications for clients and product teams.',
-      p2: 'Skilled in HTML, CSS, JavaScript, PHP, and MySQL, with solid knowledge of both frontend and backend development. I fully commit to every project, prioritizing clean code, a logical structure, and efficiency.'
-    },
-    services: {
-      label: 'Core / 02',
-      title: 'Services',
-      items: [
-        {
-          title: 'Premium Corporate Web',
-          desc: 'Development of professional websites focused on conversion and branding.',
-          icon: '💎',
-          url: 'https://mykeracademy.com/'
-        },
-        {
-          title: 'SaaS & Custom Apps',
-          desc: 'Construction of scalable platforms and digital products.',
-          icon: '🚀',
-          url: 'https://mallenk.github.io/Plantilla-Plataforma-Academia-Escolar/'
-        },
-        {
-          title: 'Process Automation',
-          desc: 'Optimization of internal workflows and business systems.',
-          icon: '⚙️'
-        },
-        {
-          title: 'AI Integration',
-          desc: 'Chatbots, data analysis, and intelligent assistants.',
-          icon: '🧠',
-          action: 'open-ai-chat'
-        },
-        {
-          title: 'Web Consulting & Audit',
-          desc: 'Technical analysis, performance and architecture evaluation, UX audit, and definition of improvement plans with actionable recommendations for digital products.',
-          icon: '🔍'
-        },
-        {
-          title: 'Coding/AI Mentoring',
-          desc: 'Personalized practical sessions to learn programming and artificial intelligence.',
-          icon: '🎓'
-        }
-      ]
+      tag: 'Profile',
+      lead: 'Four years building corporate sites and web applications for clients and product teams.',
+      body: 'I work the frontend and the backend to the same standard: HTML, CSS, JavaScript, TypeScript, PHP and MySQL. I commit fully to every project, prioritising clean code, a logical structure and efficiency. I treat every website as a product, not a deliverable.',
+      skillsTag: 'Stack',
+      skills: COMMON_SKILLS
     },
     projects: {
-      label: 'Portfolio / 03',
-      title: 'Projects',
-      items: [
+      tag: 'Work',
+      title: 'Five real briefs, live in production or delivered.',
+      items: merge([
         {
-          id: '01',
-          title: 'Schneider Electric',
-          category: 'Enterprise / Industry',
-          year: '2024',
+          category: 'Enterprise · Industry',
           role: 'Full Stack Engineer',
-          image: IMAGES.schneider,
-          url: 'https://www.se.com/es/es/',
-          stack: ['PHP', 'CodeIgniter', 'MySQL', 'Git', 'Postman', 'Docker'],
           description:
-            'Maintenance and evolution of an industrial platform within an international corporate environment. Critical full-stack development in production.'
+            'Maintenance and evolution of an industrial platform inside an international corporate environment. Critical full-stack development in production.'
         },
         {
-          id: '02',
-          title: 'Myker Academy',
-          category: 'Corporate / EdTech',
-          year: '2025',
+          category: 'Corporate · EdTech',
           role: 'Lead Developer',
-          image: IMAGES.myker,
-          url: 'https://mykeracademy.com/',
-          stack: ['Google AI Studio', 'React', 'TypeScript', 'Tailwind', 'npm', 'SEO'],
           description:
-            'Design and development of a corporate website for a language school, focused on lead generation, brand positioning, and scalable digital presence.'
+            'Design and development of a corporate website for a language school, focused on lead generation and brand positioning.'
         },
         {
-          id: '03',
-          title: 'Project Architecture Planner',
-          category: 'AI Architecture / Dev Tool',
-          year: '2024',
+          category: 'AI Architecture · Tool',
           role: 'AI Product Engineer',
-          image: IMAGES.ai,
-          url: 'https://chatgpt.com/g/g-699de200e9c481919b02f30b73bc79bb-project-architecture-planner',
-          stack: ['GPT', 'OpenAI', 'System Design'],
           description:
-            'AI-powered software architecture assistant designed to help structure digital projects.'
+            'AI-powered software architecture assistant that helps structure the technical shape of digital projects.'
         },
         {
-          id: '04',
-          title: 'Cro&Txet',
-          category: 'E-commerce / Handmade',
-          year: '2025',
+          category: 'E-commerce · Handmade',
           role: 'Full Stack Developer',
-          image: IMAGES.crotxet,
-          url: 'https://www.croandtxet.cat/',
-          stack: ['React', 'TypeScript', 'Tailwind', 'Vercel', 'EmailJS', 'i18n', 'SEO'],
           description:
-            'Handmade bags online store. Crafted shopping experience, visual catalog, multi-language support, and brand-focused UX to convert visits into orders.'
+            'Handmade bags online store. Crafted shopping experience, visual catalogue, multi-language and brand-focused UX to turn visits into orders.'
         },
         {
-          id: '05',
-          title: 'JP Preparation',
-          category: 'Sports / Player Development',
-          year: '2025',
+          category: 'Sports · Player Development',
           role: 'Full Stack Developer',
-          image: IMAGES.jpprep,
-          url: 'https://www.jppreparation.com/',
-          stack: ['React', 'TypeScript', 'Tailwind CSS', 'Vite', 'PHP', 'CodeIgniter 4', 'Docker'],
           description:
-            "Design and development of the website and management platform for JP Preparation, a football player-development academy. A fully responsive project with a clean, polished design crafted to reinforce the school's identity."
-        },
-      ]
-    },
-    skills: {
-      label: 'Stack / 04',
-      intro: 'Solid',
-      introHighlight1: 'Full Stack Architecture',
-      introConnector: 'built for',
-      introHighlight2: 'Automation & AI',
-      items: COMMON_SKILLS
+            'Website and management platform for JP Preparation, a football player-development academy. Fully responsive, with a clean design that reinforces the school’s identity.'
+        }
+      ])
     },
     experience: {
-      label: 'History / 05',
+      tag: 'Experience',
+      title: 'Five stages, from the internship to the current role.',
       items: [
         {
           id: 'exp1',
           company: 'Tempel Group',
           role: 'Full Stack Developer',
-          period: '03/2026 – 06/2026',
+          period: '2026',
           achievements: [
-            'Development and maintenance of the international web ecosystem, ensuring scalability, brand consistency, and proper multilingual localization',
-            'Design and implementation of landing pages and corporate sites optimized for conversion across marketing campaigns, events, and product launches',
-            'Built custom web applications from scratch to streamline internal processes, prioritizing clean architecture and an efficient backend',
-            'Stack: WordPress, PHP, MySQL, JavaScript, Tailwind CSS, REST API, Git'
+            'Development and maintenance of the international web ecosystem, ensuring scalability, brand consistency and multilingual localisation',
+            'Landing pages and corporate sites optimised for conversion across campaigns, events and product launches',
+            'Custom web applications from scratch for internal processes, with clean architecture and an efficient backend',
+            'WordPress, PHP, MySQL, JavaScript, Tailwind CSS, REST API, Git'
           ]
         },
         {
           id: 'exp2',
           company: 'Devinet',
           role: 'Full Stack Developer',
-          period: '02/2024 – 01/2026',
+          period: '2024 – 2026',
           achievements: [
-            'Development and maintenance of scalable web applications with clean code to ease product evolution',
+            'Scalable web applications with clean code to ease product evolution',
             'Proactive collaboration in multidisciplinary teams under agile methodologies',
-            'UI optimization through responsive design and UX improvements',
-            'Stack: CodeIgniter, MySQL, AWS, REST API, jQuery, AI Development'
+            'UI optimisation through responsive design and UX improvements',
+            'CodeIgniter, MySQL, AWS, REST API, jQuery, AI development'
           ]
         },
         {
           id: 'exp3',
           company: 'Tenea',
           role: 'Backend Developer',
-          period: '10/2023 – 01/2024',
+          period: '2023 – 2024',
           achievements: [
             'System updates and maintenance for corporate clients',
             'Improved backend reliability and performance',
-            'Stack: React, Node.js, RxJS, Symfony, MySQL'
+            'React, Node.js, RxJS, Symfony, MySQL'
           ]
         },
         {
           id: 'exp4',
           company: 'Vilax',
           role: 'Web Development Internship',
-          period: '01/2023 – 09/2023',
+          period: '2023',
           achievements: [
-            'Creation and maintenance of websites using modern web technologies',
+            'Creation and maintenance of websites using modern technologies',
             'Product management across multiple e-commerce platforms',
             'SEO implementation to improve search engine visibility',
-            'Stack: WordPress, PHP, Tailwind CSS, SEO, Figma, Google Analytics'
+            'WordPress, PHP, Tailwind CSS, SEO, Figma, Google Analytics'
           ]
         },
         {
           id: 'exp5',
           company: 'Farmacia y Salud Digital',
           role: 'Digital Operations Internship',
-          period: '01/2022 – 06/2022',
+          period: '2022',
           achievements: [
             'Product management for multiple e-commerce stores',
-            'Implementation of SEO improvements to optimize online presence',
-            'Stack: SEO, WordPress, MySQL'
+            'SEO improvements to optimise online presence',
+            'SEO, WordPress, MySQL'
           ]
         }
       ]
     },
+    services: {
+      tag: 'Services',
+      title: 'What you can hire. Freelance or for your team.',
+      items: [
+        { title: 'Premium corporate web', desc: 'Professional websites focused on conversion and brand.', url: 'https://mykeracademy.com/' },
+        { title: 'SaaS & custom apps', desc: 'Scalable platforms and digital products from scratch.', url: 'https://mallenk.github.io/Plantilla-Plataforma-Academia-Escolar/' },
+        { title: 'Process automation', desc: 'Optimisation of internal workflows and business systems.' },
+        { title: 'AI integration', desc: 'Chatbots, data analysis and intelligent assistants.', action: 'open-ai-chat' },
+        { title: 'Web consulting & audit', desc: 'Technical analysis, performance, architecture and UX, with an actionable improvement plan.' },
+        { title: 'Coding / AI mentoring', desc: 'Personalised hands-on sessions to learn coding and AI integration.' }
+      ]
+    },
     contact: {
-      label: 'Collaborate / 06',
-      freelanceLabel: 'Freelance & Enterprise',
+      tag: 'Contact',
+      title: 'Tell me what you want to build.',
+      line: 'Available for freelance projects and to join a product team.',
+      directLabel: 'Direct',
       socialLabel: 'Social',
-      formName: 'Your Name',
+      formName: 'Your name',
       formEmail: 'Your email',
-      formIdea: 'Project / Idea',
-      btn: 'Send Request',
-      footerText: 'Sergi Mallén © 2026',
-      footerLoc: 'Based in Colònia Güell, Barcelona',
-      footerRole: 'Full Stack Logic'
+      formIdea: 'Project or idea',
+      footerLoc: 'Colònia Güell, Barcelona',
+      footerRole: 'Full Stack Engineer'
     }
   }
 };

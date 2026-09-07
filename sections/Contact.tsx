@@ -1,220 +1,156 @@
-import React, { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import MagneticWrapper from '../components/MagneticWrapper';
+import React, { useState } from 'react';
+import emailjs from '@emailjs/browser';
 import { PortfolioContent } from '../types';
 import { SOCIAL_LINKS } from '../constants';
-import emailjs from "@emailjs/browser";
-
-gsap.registerPlugin(ScrollTrigger);
+import { Section, Reveal, useCopy } from '../components/ui';
 
 interface Props {
   content: PortfolioContent['contact'];
+  ui: PortfolioContent['ui'];
+  meta: PortfolioContent['meta'];
 }
 
-const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+type Status = 'idle' | 'sending' | 'sent' | 'error';
 
-  const form = e.currentTarget;
+const SOCIALS = [
+  { label: 'LinkedIn', href: SOCIAL_LINKS.linkedin },
+  { label: 'GitHub', href: SOCIAL_LINKS.github },
+  { label: 'Instagram', href: SOCIAL_LINKS.instagram },
+  { label: 'WhatsApp', href: SOCIAL_LINKS.whatsapp }
+];
 
-  const templateParams = {
-    name: (form.elements.namedItem("name") as HTMLInputElement).value,
-    email: (form.elements.namedItem("email") as HTMLInputElement).value,
-    message: (form.elements.namedItem("message") as HTMLInputElement).value,
-    date: new Date().toLocaleString()
+const Field: React.FC<{ name: string; label: string; type?: string; area?: boolean }> = ({
+  name,
+  label,
+  type = 'text',
+  area
+}) => (
+  <label className="block border-b border-hair pb-3 transition-colors focus-within:border-accent">
+    <span className="tag">{label}</span>
+    {area ? (
+      <textarea
+        name={name}
+        required
+        rows={3}
+        className="mt-2 w-full resize-none bg-transparent text-lg text-fg outline-none placeholder:text-fgfaint md:text-xl"
+        placeholder="—"
+      />
+    ) : (
+      <input
+        name={name}
+        type={type}
+        required
+        className="mt-2 w-full bg-transparent text-lg text-fg outline-none placeholder:text-fgfaint md:text-xl"
+        placeholder="—"
+      />
+    )}
+  </label>
+);
+
+const Contact: React.FC<Props> = ({ content, ui, meta }) => {
+  const [status, setStatus] = useState<Status>('idle');
+  const { copied, copy } = useCopy();
+
+  const submit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (status === 'sending') return;
+    const form = e.currentTarget;
+    setStatus('sending');
+    emailjs
+      .send(
+        'service_cilgouv',
+        'template_7vb1edf',
+        {
+          name: (form.elements.namedItem('name') as HTMLInputElement).value,
+          email: (form.elements.namedItem('email') as HTMLInputElement).value,
+          message: (form.elements.namedItem('message') as HTMLTextAreaElement).value,
+          date: new Date().toLocaleString()
+        },
+        'iGpB097zxE-0bBxRC'
+      )
+      .then(() => {
+        setStatus('sent');
+        form.reset();
+      })
+      .catch((err) => {
+        console.error('EmailJS error:', err);
+        setStatus('error');
+      });
   };
 
-  emailjs
-    .send(
-      "service_cilgouv",
-      "template_7vb1edf",
-      templateParams,
-      "iGpB097zxE-0bBxRC"
-    )
-    .then(() => {
-      alert("Mensaje enviado correctamente");
-      form.reset();
-    })
-    .catch((err) => {
-      console.error("EmailJS error:", err);
-      alert("Error al enviar mensaje");
-    });
-};
-
-
-
-const Contact: React.FC<Props> = ({ content }) => {
-  const sectionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from('.contact-reveal', {
-        y: 80,
-        opacity: 0,
-        stagger: 0.1,
-        duration: 1,
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 80%',
-        },
-      });
-    });
-
-    return () => ctx.revert();
-  }, []);
-
   return (
-    <section
-      ref={sectionRef}
-      className="py-32 px-6 bg-white text-black rounded-t-[5vw] md:rounded-t-[10vw]"
-    >
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-          {/* LEFT */}
-          <div>
-            <h2 className="contact-reveal text-[10px] uppercase tracking-[0.5em] text-zinc-400 font-black mb-12">
-              {content.label}
-            </h2>
+    <Section id="contacto" index="05" tag={content.tag} title={content.title}>
+      <div className="grid gap-14 lg:grid-cols-2 lg:gap-20">
+        <div>
+          <Reveal>
+            <p className="max-w-[42ch] text-[15px] leading-relaxed text-fgdim">{content.line}</p>
+          </Reveal>
 
-            <h3 className="contact-reveal text-[15vw] lg:text-[10vw] font-black leading-[0.8] tracking-tighter uppercase mb-16">
-              Start<br />
-              <span className="text-zinc-200">Build</span><br />
-              <span className="text-[#F5C400]">Now</span>
-            </h3>
-
-            <div className="space-y-12">
-              <div className="contact-reveal">
-                <p className="text-[10px] uppercase tracking-widest text-zinc-400 mb-4 font-black">
-                  {content.freelanceLabel}
-                </p>
+          <Reveal delay={120}>
+            <div className="mt-12">
+              <p className="tag">{content.directLabel}</p>
+              <div className="mt-3 flex flex-wrap items-center gap-4">
                 <a
                   href={`mailto:${SOCIAL_LINKS.email}`}
-                  className="text-2xl md:text-4xl font-black hover:text-[#F5C400] transition-colors lowercase"
+                  className="text-xl text-fg transition-colors hover:text-accent md:text-2xl"
                 >
                   {SOCIAL_LINKS.email}
                 </a>
-              </div>
-
-              <div className="contact-reveal">
-                <p className="text-[10px] uppercase tracking-widest text-zinc-400 mb-4 font-black">
-                  {content.socialLabel}
-                </p>
-                <div className="flex gap-8 flex-wrap">
-                  <a
-                    href={SOCIAL_LINKS.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xl font-black hover:text-[#F5C400] transition-colors uppercase italic"
-                  >
-                    LinkedIn
-                  </a>
-                  <a
-                    href={SOCIAL_LINKS.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xl font-black hover:text-[#F5C400] transition-colors uppercase italic"
-                  >
-                    GitHub
-                  </a>
-                  <a
-                    href={SOCIAL_LINKS.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xl font-black hover:text-[#F5C400] transition-colors uppercase italic"
-                  >
-                    Instagram
-                  </a>
-                  <a
-                    href={SOCIAL_LINKS.whatsapp}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xl font-black hover:text-[#F5C400] transition-colors uppercase italic"
-                  >
-                    WhatsApp
-                  </a>
-                </div>
+                <button
+                  onClick={() => copy(SOCIAL_LINKS.email)}
+                  className="border border-hair px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-fgdim transition-colors hover:border-accent hover:text-accent"
+                >
+                  {copied ? ui.copied : ui.copy}
+                </button>
               </div>
             </div>
-          </div>
+          </Reveal>
 
-          {/* RIGHT – FORM */}
-          <form
-            onSubmit={handleSubmit}
-            className="contact-reveal space-y-12"
-          >
-
-            {/* NAME */}
-            <div className="group border-b border-zinc-200 pb-6 focus-within:border-black transition-colors">
-              <label className="text-[10px] uppercase font-black tracking-widest text-zinc-400 block mb-2">
-                {content.formName}
-              </label>
-              <input
-                type="text"
-                name="name"
-                required
-                className="w-full bg-transparent py-2 text-2xl md:text-4xl font-light text-black outline-none placeholder:text-zinc-400"
-                placeholder={content.formName}
-              />
+          <Reveal delay={200}>
+            <div className="mt-10">
+              <p className="tag">{content.socialLabel}</p>
+              <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+                {SOCIALS.map((s) => (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[15px] text-fgdim transition-colors hover:text-fg"
+                  >
+                    {s.label}
+                  </a>
+                ))}
+              </div>
             </div>
+          </Reveal>
+        </div>
 
-            {/* EMAIL */}
-            <div className="group border-b border-zinc-200 pb-6 focus-within:border-black transition-colors">
-              <label className="text-[10px] uppercase font-black tracking-widest text-zinc-400 block mb-2">
-                {content.formEmail}
-              </label>
-              <input
-                type="email"
-                name="email"
-                required
-                className="w-full bg-transparent py-2 text-2xl md:text-4xl font-light text-black outline-none placeholder:text-zinc-400"
-                placeholder={content.formEmail}
-              />
-            </div>
-
-            {/* MESSAGE */}
-            <div className="group border-b border-zinc-200 pb-6 focus-within:border-black transition-colors">
-              <label className="text-[10px] uppercase font-black tracking-widest text-zinc-400 block mb-2">
-                {content.formIdea}
-              </label>
-              <textarea
-                name="message"
-                required
-                rows={3}
-                className="w-full bg-transparent py-2 text-2xl md:text-4xl font-light text-black outline-none placeholder:text-zinc-400 resize-none"
-                placeholder={content.formIdea}
-              />
-            </div>
-
-            <MagneticWrapper strength={0.1}>
-              <button
-                type="submit"
-                className="w-full py-10 bg-black text-white rounded-full font-black uppercase tracking-[0.4em] text-xs hover:bg-[#F5C400] hover:text-black transition-all duration-500"
-              >
-                {content.btn}
-              </button>
-            </MagneticWrapper>
-
+        <Reveal delay={120}>
+          <form onSubmit={submit} className="flex flex-col gap-8">
+            <Field name="name" label={content.formName} />
+            <Field name="email" label={content.formEmail} type="email" />
+            <Field name="message" label={content.formIdea} area />
+            <button
+              type="submit"
+              disabled={status === 'sending'}
+              className="mt-1 border border-fg py-4 font-mono text-[11px] uppercase tracking-[0.28em] text-fg transition-colors hover:border-accent hover:text-accent disabled:opacity-50"
+            >
+              {status === 'sending' ? ui.sending : ui.send}
+            </button>
+            <p role="status" className={`min-h-[1.2rem] text-[13px] ${status === 'error' ? 'text-[#e0857a]' : 'text-accent'}`}>
+              {status === 'sent' ? ui.sent : status === 'error' ? ui.error : ''}
+            </p>
           </form>
-
-        </div>
-
-        {/* FOOTER */}
-        <div className="mt-40 pt-16 border-t border-zinc-300 flex flex-col md:flex-row justify-between items-center gap-8 text-[10px] uppercase font-black tracking-[0.5em] text-zinc-500">
-          <span className="text-zinc-700">
-            {content.footerText}
-          </span>
-
-          <span className="text-center text-zinc-500">
-            {content.footerLoc}
-          </span>
-
-          <span className="text-zinc-700">
-            {content.footerRole}
-          </span>
-        </div>
-
+        </Reveal>
       </div>
-    </section>
+
+      <div className="mt-24 flex flex-col items-start justify-between gap-3 border-t border-hair pt-8 font-mono text-[10px] uppercase tracking-[0.24em] text-fgfaint sm:flex-row sm:items-center">
+        <span>{meta.name} © 2026</span>
+        <span>{content.footerLoc}</span>
+        <span>{content.footerRole}</span>
+      </div>
+    </Section>
   );
 };
 

@@ -163,11 +163,18 @@ const Chatbox: React.FC<Props> = ({ lang, content }) => {
   const floatingChat = (
     <div className="fixed bottom-6 right-6 z-[9999] font-sans pointer-events-auto">
       {/* Floating Trigger */}
-      <button 
+      <button
+        data-chat-toggle
+        aria-label={isOpen ? 'Cerrar chat' : 'Abrir chat'}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-12 h-12 bg-white text-black rounded-full shadow-[0_0_20px_rgba(0,0,0,0.3)] flex items-center justify-center font-bold border border-zinc-200 hover:scale-110 transition-transform active:scale-95"
+        className="w-10 h-10 rounded-full flex items-center justify-center border transition-colors active:scale-95"
+        style={{ background: 'var(--bg-2)', color: 'var(--fg)', borderColor: 'var(--hair)' }}
       >
-        {isOpen ? '✕' : '💬'}
+        {isOpen ? (
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" strokeWidth="1.5"/></svg>
+        ) : (
+          <svg width="15" height="15" viewBox="0 0 17 17" fill="none" aria-hidden><path d="M2 3.5h13v8H6l-4 3v-3H2z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/></svg>
+        )}
       </button>
 
       {/* Chat Window */}

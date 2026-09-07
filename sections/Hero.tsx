@@ -1,119 +1,57 @@
-
-import React, { useEffect, useRef, useState } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { motion, AnimatePresence } from 'framer-motion';
-import MagneticWrapper from '../components/MagneticWrapper';
+import React from 'react';
 import { PortfolioContent } from '../types';
-
-gsap.registerPlugin(ScrollTrigger);
+import Constellation from '../components/map/Constellation';
+import { scrollToId } from '../components/ui';
+import type { Theme } from '../hooks/useApp';
 
 interface Props {
-  content: PortfolioContent['hero'];
+  content: PortfolioContent;
+  theme: Theme;
+  reducedMotion: boolean;
 }
 
-const Hero: React.FC<Props> = ({ content }) => {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const bgRef = useRef<HTMLDivElement>(null);
-  const [displayedText, setDisplayedText] = useState('');
-  
-  // Standard simple typing (restored to original non-easter-egg behavior)
-  useEffect(() => {
-    const fullText = content.subtitle;
-    let currentIndex = 0;
-    setDisplayedText('');
-    const interval = setInterval(() => {
-        if (currentIndex <= fullText.length) {
-            setDisplayedText(fullText.substring(0, currentIndex));
-            currentIndex++;
-        } else {
-            clearInterval(interval);
-        }
-    }, 40);
-
-    return () => clearInterval(interval);
-  }, [content.subtitle]);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.to(bgRef.current, {
-        scale: 1.2,
-        opacity: 0.2,
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        }
-      });
-
-      gsap.to(titleRef.current, {
-        y: -150,
-        opacity: 0,
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top top",
-          end: "60% top",
-          scrub: true,
-        }
-      });
-    });
-
-    return () => ctx.revert();
-  }, []);
+const Hero: React.FC<Props> = ({ content, theme, reducedMotion }) => {
+  const { meta, ui } = content;
 
   return (
-    <section ref={sectionRef} className="relative h-screen flex flex-col items-center justify-center overflow-hidden px-6">
-      <div ref={bgRef} className="absolute inset-0 -z-10 flex items-center justify-center pointer-events-none">
-        <div className="w-[100vw] h-[100vw] rounded-full bg-[#F5C400] blur-[150px] opacity-10" />
-      </div>
+    <header className="relative h-[100svh] w-full overflow-hidden">
+      <Constellation
+        content={content}
+        theme={theme}
+        reducedMotion={reducedMotion}
+        onNavigate={scrollToId}
+      />
 
-      <div className="z-10 text-center max-w-7xl relative">
-        {/* SUBTITLE: Increased spacing for mobile (mb-10), reset for desktop (lg:mb-6) */}
-        <div className="overflow-hidden mb-10 lg:mb-6 h-6 flex items-center justify-center">
-          <span className="block text-[#F5C400] font-black tracking-[0.4em] uppercase text-[10px] md:text-xs">
-            {displayedText}
-            <span className="animate-pulse">|</span>
+      {/* overlay — pointer passes through to the canvas except on interactive bits */}
+      <div className="pointer-events-none absolute inset-0 flex flex-col">
+        <div className="flex flex-1 flex-col items-center justify-end px-6 pb-[30vh] text-center sm:justify-center sm:pb-0">
+          <h1 className="font-mono text-[clamp(1.55rem,6vw,3.7rem)] font-medium uppercase leading-none tracking-[0.16em] text-fg [text-shadow:0_0_30px_var(--bg)]">
+            {meta.name}
+          </h1>
+          <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.3em] text-fgdim [text-shadow:0_0_16px_var(--bg)]">
+            {meta.alias} · {meta.role}
+          </p>
+          <p className="mt-3 max-w-[30ch] font-sans text-[13px] leading-relaxed text-fgdim/90 [text-shadow:0_0_16px_var(--bg)]">
+            {meta.tagline}
+          </p>
+        </div>
+
+        <div className="flex flex-col items-center gap-2 pb-7 md:pb-9">
+          <span className="hidden font-mono text-[9px] uppercase tracking-[0.28em] text-fgfaint md:block">
+            {ui.mapHint}
           </span>
-        </div>
-
-        {/* MAIN TITLE: Increased spacing for mobile (mb-16), reset for desktop (lg:mb-12) */}
-        <h1 ref={titleRef} className="text-[14vw] sm:text-[11vw] font-black leading-[0.85] tracking-tighter uppercase mb-16 lg:mb-12">
-          Sergi<br />
-          <div className="relative inline-block">
-             <span className="text-white/20 stroke-text hover:text-white/30 transition-colors duration-500">Mallen</span>
-          </div>
-          <br />
-          López
-        </h1>
-
-        {/* CTA BUTTONS: Increased gap for mobile (gap-8), reset for desktop (lg:gap-6) */}
-        <div className="flex flex-col sm:flex-row gap-8 lg:gap-6 justify-center items-center">
-          <MagneticWrapper strength={0.15}>
-            <a href="#projects" className="px-12 py-6 bg-[#F5C400] text-black rounded-full font-black uppercase text-xs tracking-[0.2em] hover:scale-105 transition-transform">
-              {content.cta}
-            </a>
-          </MagneticWrapper>
-          <a href="#skills" className="text-xs uppercase tracking-widest font-bold text-white/40 hover:text-[#F5C400] transition-colors">
-            MallenK Info
-          </a>
+          <button
+            onClick={() => scrollToId('perfil')}
+            className="pointer-events-auto group flex items-center gap-2.5 font-mono text-[10px] uppercase tracking-[0.3em] text-fgdim transition-colors hover:text-fg"
+          >
+            {ui.scroll}
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden className="transition-transform group-hover:translate-y-0.5">
+              <path d="M6 1v10M2 7l4 4 4-4" stroke="currentColor" strokeWidth="1.4" />
+            </svg>
+          </button>
         </div>
       </div>
-
-      {/* SCROLL INDICATOR: Pushed lower on mobile (bottom-6) to give center content more room, reset for desktop (lg:bottom-12) */}
-      <div className="absolute bottom-6 lg:bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
-        <span className="text-[8px] uppercase tracking-[0.5em] text-white/20 font-bold">{content.scroll}</span>
-        <div className="w-px h-12 bg-gradient-to-b from-[#F5C400] to-transparent" />
-      </div>
-
-      <style>{`
-        .stroke-text {
-          -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
-          color: transparent;
-        }
-      `}</style>
-    </section>
+    </header>
   );
 };
 

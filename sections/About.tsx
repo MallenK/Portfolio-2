@@ -1,60 +1,46 @@
-import React, { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import React from 'react';
 import { PortfolioContent } from '../types';
-
-gsap.registerPlugin(ScrollTrigger);
+import { Section, Reveal } from '../components/ui';
 
 interface Props {
   content: PortfolioContent['about'];
 }
 
-const About: React.FC<Props> = ({ content }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+const About: React.FC<Props> = ({ content }) => (
+  <Section id="perfil" index="01" tag={content.tag}>
+    <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+      <div className="lg:col-span-7">
+        <Reveal>
+          <p className="text-[clamp(1.4rem,2.8vw,2.1rem)] font-medium leading-[1.28] tracking-[-0.01em] text-fg">
+            {content.lead}
+          </p>
+        </Reveal>
+        <Reveal delay={120}>
+          <p className="mt-8 max-w-[54ch] text-[15px] leading-[1.75] text-fgdim">{content.body}</p>
+        </Reveal>
+      </div>
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(".about-reveal", {
-        y: 40,
-        opacity: 0,
-        stagger: 0.15,
-        duration: 1.2,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 75%",
-          end: "bottom 60%",
-          toggleActions: "play none none reverse"
-        }
-      });
-    });
-    return () => ctx.revert();
-  }, []);
-
-  return (
-    <section ref={containerRef} className="min-h-screen py-32 px-6 flex flex-col justify-center bg-[#0B0B0B] w-full">
-      <div className="max-w-7xl mx-auto w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-          <div className="lg:col-span-4">
-            <h2 className="about-reveal text-[10px] uppercase tracking-[0.5em] text-[#F5C400] font-black">
-              {content.label}
-            </h2>
-          </div>
-          <div className="lg:col-span-8">
-            <p className="about-reveal text-4xl sm:text-5xl lg:text-7xl font-light leading-[1] tracking-tighter text-white mb-16">
-              {content.title} <span className="text-[#F5C400] font-black uppercase italic">{content.highlight}</span> {content.p1}
-            </p>
-            
-            <div className="grid grid-cols-1 gap-12 text-white/40 text-lg leading-relaxed font-light">
-              <div className="about-reveal">
-                {content.p2}
+      <div className="lg:col-span-5">
+        <Reveal delay={80}>
+          <p className="tag mb-6">{content.skillsTag}</p>
+        </Reveal>
+        <div className="border-t border-hair">
+          {content.skills.map((g, i) => (
+            <Reveal key={g.category} delay={i * 70}>
+              <div className="grid grid-cols-1 gap-2 border-b border-hair py-5 sm:grid-cols-[9rem_1fr] sm:gap-6">
+                <span className="font-mono text-[12px] uppercase tracking-[0.16em] text-fg">
+                  {g.category}
+                </span>
+                <span className="text-[13px] leading-relaxed text-fgdim">
+                  {g.skills.join('  ·  ')}
+                </span>
               </div>
-            </div>
-          </div>
+            </Reveal>
+          ))}
         </div>
       </div>
-    </section>
-  );
-};
+    </div>
+  </Section>
+);
 
 export default About;

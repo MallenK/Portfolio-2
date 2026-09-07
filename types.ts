@@ -1,4 +1,3 @@
-
 export interface Project {
   id: string;
   title: string;
@@ -9,7 +8,8 @@ export interface Project {
   url: string;
   year: string;
   image: string;
-  link?: string;
+  /** live in production — earns the accent "en producción" marker */
+  live?: boolean;
 }
 
 export interface Experience {
@@ -26,63 +26,72 @@ export interface SkillGroup {
 }
 
 export interface Service {
-  title: string
-  desc: string
-  icon: string
-  url?: string
-  action?: string
+  title: string;
+  desc: string;
+  url?: string;
+  action?: string;
 }
 
 export interface PortfolioContent {
+  meta: {
+    name: string;
+    alias: string;
+    role: string;
+    tagline: string;
+    location: string;
+  };
   nav: {
-    projects: string;
-    about: string;
-    contact: string;
+    perfil: string;
+    proyectos: string;
+    experiencia: string;
+    servicios: string;
+    contacto: string;
     cv: string;
   };
-  hero: {
-    subtitle: string;
-    cta: string;
+  ui: {
     scroll: string;
+    mapHint: string;
+    open: string;
+    live: string;
+    roleLabel: string;
+    copy: string;
+    copied: string;
+    send: string;
+    sending: string;
+    sent: string;
+    error: string;
   };
   about: {
-    label: string;
-    title: string;
-    p1: string;
-    p2: string;
-    highlight: string;
-  };
-  services: {
-    label: string;
-    title: string;
-    items: Service[];
+    tag: string;
+    lead: string;
+    body: string;
+    skillsTag: string;
+    skills: SkillGroup[];
   };
   projects: {
-    label: string;
+    tag: string;
     title: string;
     items: Project[];
   };
-  skills: {
-    label: string;
-    intro: string;
-    introHighlight1: string;
-    introConnector: string;
-    introHighlight2: string;
-    items: SkillGroup[];
-  };
   experience: {
-    label: string;
+    tag: string;
+    title: string;
     items: Experience[];
   };
+  services: {
+    tag: string;
+    title: string;
+    items: Service[];
+  };
   contact: {
-    label: string;
-    freelanceLabel: string;
+    tag: string;
+    title: string;
+    line: string;
+    directLabel: string;
     socialLabel: string;
     formName: string;
     formEmail: string;
     formIdea: string;
-    btn: string;
-    footerText: string;
     footerLoc: string;
     footerRole: string;
   };

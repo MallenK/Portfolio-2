@@ -85,9 +85,11 @@ const CheatSheet: React.FC = () => {
 
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg relative z-50 ${isOpen ? 'bg-[#F5C400] text-black rotate-90 scale-110' : 'bg-black border border-white/20 text-white/50 hover:text-white hover:border-white'}`}
+        aria-label="System override"
+        style={{ background: 'var(--bg-2)', borderColor: 'var(--hair)', color: isOpen ? 'var(--bg)' : 'var(--fg-dim)', backgroundColor: isOpen ? 'var(--accent)' : 'var(--bg-2)' }}
+        className={`w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-300 relative z-50 ${isOpen ? 'rotate-90 scale-105' : 'hover:opacity-80'}`}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
           <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
         </svg>
       </button>
