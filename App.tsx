@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { TRANSLATIONS } from './constants';
@@ -42,10 +42,29 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(t);
   }, []);
 
+  // keep the latest focus available to the (stable) selectNode callback
+  const focusRef = useRef<string | null>(null);
+  useEffect(() => {
+    focusRef.current = focus;
+  }, [focus]);
+
+  /** direct open — HUD buttons, in-popup navigation */
   const openNode = useCallback((id: string, section: string, anch?: string) => {
     setFocus(id);
     setActive(section);
     setAnchor(anch ?? null);
+  }, []);
+  /** 3D node click — first click selects & flies to the node, a second click
+      on the already-selected node opens its window */
+  const selectNode = useCallback((id: string, section: string, anch?: string) => {
+    if (focusRef.current === id) {
+      setActive(section);
+      setAnchor(anch ?? null);
+    } else {
+      setFocus(id);
+      setActive(null);
+      setAnchor(null);
+    }
   }, []);
   const flyTo = useCallback((id: string) => {
     setFocus(id);
@@ -102,6 +121,7 @@ const AppContent: React.FC = () => {
                   active={active}
                   focus={focus}
                   onNode={openNode}
+                  onSelect={selectNode}
                   onFly={flyTo}
                 />
               </ClickSpark>

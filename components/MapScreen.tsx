@@ -18,7 +18,10 @@ interface Props {
   reducedMotion: boolean;
   active: string | null;
   focus: string | null;
+  /** direct open — HUD + 2D fallback */
   onNode: (id: string, section: string, anchor?: string) => void;
+  /** 3D node click — select first, open on a second click */
+  onSelect: (id: string, section: string, anchor?: string) => void;
   onFly: (id: string) => void;
 }
 
@@ -43,6 +46,7 @@ const MapScreen: React.FC<Props> = ({
   active,
   focus,
   onNode,
+  onSelect,
   onFly
 }) => {
   const { meta, ui, nav } = content;
@@ -70,7 +74,7 @@ const MapScreen: React.FC<Props> = ({
             reducedMotion={reducedMotion}
             focusId={focus}
             activeSection={active}
-            onNode={onNode}
+            onNode={onSelect}
           />
         </Suspense>
       ) : (

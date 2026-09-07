@@ -7,6 +7,10 @@ import { iconForCategory, iconTexture, PERFIL_CATEGORIES } from './techIcons';
 
 const ACCENT = '#fde100';
 
+/* the core keeps its size; the rest of the graph reads larger */
+const PRIMARY_SCALE = 1.42;
+const SAT_SCALE = 1.5;
+
 /* compact 3D value-noise for the flow shaders */
 const NOISE = /* glsl */ `
   vec3 h3(vec3 p){ p=vec3(dot(p,vec3(127.1,311.7,74.7)),dot(p,vec3(269.5,183.3,246.1)),dot(p,vec3(113.5,271.9,124.6)));
@@ -314,14 +318,16 @@ const useHover = (onHover: (id: string | null) => void, id: string) => {
   };
 };
 
-/* ---------- floating name card on hover ---------- */
+/* ---------- floating name card on hover / select ----------
+   hint: 'focus' → a first click selects & flies here · 'open' → node is
+   selected, a second click opens its window */
 const NameCard: React.FC<{
   text: string;
   sub?: string;
   y: number;
   theme: 'dark' | 'light';
-  cta?: boolean;
-}> = ({ text, sub, y, theme, cta }) => (
+  hint?: 'focus' | 'open';
+}> = ({ text, sub, y, theme, hint }) => (
   <Html center position={[0, y, 0]} distanceFactor={12} style={{ pointerEvents: 'none' }} zIndexRange={[20, 0]}>
     <div
       style={{
@@ -356,7 +362,7 @@ const NameCard: React.FC<{
           {sub}
         </div>
       )}
-      {cta && (
+      {hint && (
         <div
           style={{
             marginTop: 5,
@@ -364,10 +370,10 @@ const NameCard: React.FC<{
             fontWeight: 600,
             letterSpacing: '0.22em',
             textTransform: 'uppercase',
-            color: ACCENT
+            color: hint === 'focus' ? (theme === 'light' ? '#565650' : '#9a9a9a') : ACCENT
           }}
         >
-          abrir →
+          {hint === 'focus' ? 'clic para enfocar' : 'clic para abrir →'}
         </div>
       )}
     </div>
@@ -376,7 +382,7 @@ const NameCard: React.FC<{
 
 /* ============================================================ CORE — "Nudo de energía"
    a torus knot carrying a flowing fbm energy band + a fresnel rim, slow tumble + breathing */
-export const CoreNode: React.FC<Common> = ({ n, theme, onNode, onHover }) => {
+export const CoreNode: React.FC<Common> = ({ n, theme, active, onNode, onHover }) => {
   const g = useRef<THREE.Group>(null);
   const knot = useRef<THREE.Mesh>(null);
   const halo = useRef<THREE.Mesh>(null);
@@ -439,7 +445,7 @@ export const CoreNode: React.FC<Common> = ({ n, theme, onNode, onHover }) => {
     if (halo.current) halo.current.rotation.y -= dt * 0.15;
     if (g.current) {
       const b = 1 + Math.sin(state.clock.elapsedTime * 1.4) * 0.04;
-      g.current.scale.setScalar(THREE.MathUtils.damp(g.current.scale.x, (hovered ? 1.14 : 1) * b, 8, dt));
+      g.current.scale.setScalar(THREE.MathUtils.damp(g.current.scale.x, (hovered || active ? 1.14 : 1) * b, 8, dt));
     }
   });
 
@@ -456,7 +462,15 @@ export const CoreNode: React.FC<Common> = ({ n, theme, onNode, onHover }) => {
         <sphereGeometry args={[0.8, 40, 40]} />
       </mesh>
       <GlowSprite size={1.6} opacity={theme === 'light' ? 0.1 : 0.16} additive={theme !== 'light'} />
-      {hovered && <NameCard text={n.label} sub="manifiesto" y={1.5} theme={theme} />}
+      {(hovered || active) && (
+        <NameCard
+          text={n.label}
+          sub="manifiesto"
+          y={1.5}
+          theme={theme}
+          hint={active ? 'open' : 'focus'}
+        />
+      )}
     </group>
   );
 };
@@ -471,7 +485,12 @@ export const PrimaryNode: React.FC<Common> = ({ n, theme, active, dim, onNode, o
 
   useFrame((_, dt) => {
     if (g.current) {
-      const s = THREE.MathUtils.damp(g.current.scale.x, lit ? 1.4 : dim ? 0.86 : 1, 9, dt);
+      const s = THREE.MathUtils.damp(
+        g.current.scale.x,
+        (lit ? 1.4 : dim ? 0.86 : 1) * PRIMARY_SCALE,
+        9,
+        dt
+      );
       g.current.scale.setScalar(s);
     }
     if (spin.current) {
@@ -554,7 +573,18 @@ export const PrimaryNode: React.FC<Common> = ({ n, theme, active, dim, onNode, o
           {n.count ? `  ·  ${n.count}` : n.section === 'contacto' ? '  ·  →' : ''}
         </span>
       </Html>
-      {hovered && n.section !== 'contacto' && <NameCard text={n.label} sub={`${n.count ?? ''} ${n.count ? 'elementos' : ''}`.trim()} y={-0.7} theme={theme} cta />}
+      {(hovered || active) && n.section !== 'contacto' && (
+        <NameCard
+          text={n.label}
+          sub={`${n.count ?? ''} ${n.count ? 'elementos' : ''}`.trim()}
+          y={-0.7}
+          theme={theme}
+          hint={active ? 'open' : 'focus'}
+        />
+      )}
+      {(hovered || active) && n.section === 'contacto' && (
+        <NameCard text={n.label} y={-0.7} theme={theme} hint={active ? 'open' : 'focus'} />
+      )}
     </group>
   );
 };
@@ -572,7 +602,7 @@ export const SatelliteNode: React.FC<Common> = ({ n, theme, active, dim, onNode,
   useFrame((state, dt) => {
     if (g.current) {
       // hover lifts the satellite toward the viewer
-      const target = lit ? 1.55 : dim ? 0.7 : 1;
+      const target = (lit ? 1.55 : dim ? 0.7 : 1) * SAT_SCALE;
       g.current.scale.setScalar(THREE.MathUtils.damp(g.current.scale.x, target, 10, dt));
     }
     if (orbit.current) orbit.current.rotation.z = state.clock.elapsedTime * 1.4;
@@ -679,7 +709,7 @@ export const SatelliteNode: React.FC<Common> = ({ n, theme, active, dim, onNode,
           }
           y={0.5}
           theme={theme}
-          cta={n.variant === 'project' || n.variant === 'service'}
+          hint={active ? 'open' : 'focus'}
         />
       )}
     </group>
