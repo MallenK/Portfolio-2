@@ -65,6 +65,17 @@ const Controls: React.FC<{
     };
   }, []);
 
+  // focused on a node → left drag / one finger also orbits it (easy inspect);
+  // roaming → left drag trucks the map (free pan)
+  useEffect(() => {
+    const c = ref.current;
+    if (!c) return;
+    const A = CameraControlsImpl.ACTION;
+    const inspecting = !!focusId;
+    c.mouseButtons.left = inspecting ? A.ROTATE : A.TRUCK;
+    c.touches.one = inspecting ? A.TOUCH_ROTATE : A.TOUCH_TRUCK;
+  }, [focusId]);
+
   useEffect(() => {
     const c = ref.current;
     if (!c) return;
@@ -78,10 +89,16 @@ const Controls: React.FC<{
     }
   }, [focusId, data.nodes]);
 
+  const idleT = useRef(0);
   useFrame((_, dt) => {
     const c = ref.current;
     if (!c) return;
-    if (!reducedMotion && performance.now() - atmos.lastInput > 2600) c.rotate(0.055 * dt, 0, false);
+    // ambient drift: a slow horizontal turn with a gentle vertical bob, so the
+    // scene tumbles in 3D at rest instead of only panning left↔right
+    if (!reducedMotion && !focusId && performance.now() - atmos.lastInput > 2600) {
+      idleT.current += dt;
+      c.rotate(0.05 * dt, Math.sin(idleT.current * 0.12) * 0.02 * dt, false);
+    }
     atmos.zoom = THREE.MathUtils.clamp(1 - (c.distance - MIN_D) / (MAX_D - MIN_D), 0, 1);
     atmos.camX = camera.position.x;
     atmos.camY = camera.position.y;
