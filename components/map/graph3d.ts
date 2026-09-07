@@ -12,22 +12,26 @@ export interface GNode3D extends GNode {
  */
 export function buildGraph3D(content: PortfolioContent) {
   const { nodes, edges } = buildGraph(content, false);
-  const SPREAD = 4.4;
+  const SPREAD = 7.2;
 
   const seed = (s: string) => {
-    let h = 0;
-    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-    return (h % 1000) / 1000;
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619) >>> 0;
+    return (h % 10000) / 10000;
   };
 
   const nodes3d: GNode3D[] = nodes.map((n) => {
     let z = 0;
     if (n.kind === 'core') z = 0;
-    else if (n.kind === 'primary') z = (seed(n.id) - 0.5) * 3.2;
-    else z = (seed(n.id) - 0.5) * 4.6;
+    else if (n.kind === 'primary') z = (seed(n.id) - 0.5) * 6.5;
+    else z = (seed(n.id + '·z') - 0.5) * 9;
 
-    const x = n.hx * SPREAD;
-    const y = n.hy * SPREAD * 0.82;
+    // widen the satellite fan a little in 3D so clusters have real volume
+    const jx = n.kind === 'satellite' ? (seed(n.id + 'x') - 0.5) * 1.1 : 0;
+    const jy = n.kind === 'satellite' ? (seed(n.id + 'y') - 0.5) * 1.1 : 0;
+
+    const x = n.hx * SPREAD + jx;
+    const y = n.hy * SPREAD * 0.78 + jy;
     return { ...n, pos: [x, y, z] as [number, number, number] };
   });
 

@@ -59,11 +59,16 @@ labels and pop-up headers; 400 / 500 for body. Tabular numerals on counts and pe
   slow spin. Primaries medium, labels via drei `<Html>` with a `· N` count. Satellites small;
   live project satellites carry a tiny yellow marker. Hover / active → yellow + scale up +
   lit edges (drei `<Line>`).
-- **Camera**: `<OrbitControls>` — drag to orbit, wheel / pinch to **zoom**, damping, polar
-  clamp, gentle auto-rotate, distance clamp. Responsive: phones start further back, widen the
-  FOV, lift + shrink the graph, and re-target OrbitControls so every cluster stays in frame.
-- **Leap**: `GraphGroup` scales + un-twists the whole graph in over ~1.2 s on mount (does not
-  fight OrbitControls, which owns the camera).
+- **Camera** (`<CameraControls>` / `camera-controls`): free flight, like nicoborja.com —
+  **left drag trucks the view in every direction**, right drag tumbles to reveal depth,
+  wheel / pinch dollies (zoom to cursor); one-finger truck + two-finger dolly-rotate on
+  touch. Damped glide (`smoothTime`), a soft `Box3` fence so you can roam wide but never fly
+  off, and a slow idle drift that resumes ~2.6 s after you let go. Distance and polar clamps.
+- **Minimap** (`Minimap.tsx`) — a top-left plan of the map (`x/z` projection) with a live
+  view marker and clickable nodes; "Mapa · estás aquí".
+- **Focus**: clicking a node flies the camera to frame it (`setLookAt`, transition) then
+  opens the pop-up; closing returns the camera home. `focusId` flows App → MapScreen → Scene3D.
+- **Leap**: `GraphGroup` scales + un-twists the whole graph in over ~1.3 s on mount.
 - **Bloom**: `EffectComposer` + `Bloom` (subtle, threshold 0.62) so the yellow nodes glow;
   dropped under `prefers-reduced-motion`.
 - `Rig` publishes camera distance → `atmos.zoom` so the background shader pushes in as you

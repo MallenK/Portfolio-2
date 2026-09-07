@@ -83,6 +83,7 @@ const AppContent: React.FC = () => {
                   lang={lang}
                   setLang={setLang}
                   reducedMotion={reducedMotion}
+                  active={active}
                   onOpen={setActive}
                 />
               </ClickSpark>

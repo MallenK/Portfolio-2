@@ -63,6 +63,7 @@ export interface PortfolioContent {
     error: string;
     close: string;
     indexTitle: string;
+    mapLabel: string;
   };
   about: {
     tag: string;

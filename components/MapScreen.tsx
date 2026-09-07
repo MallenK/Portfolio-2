@@ -2,6 +2,7 @@ import React, { Suspense, lazy, useState } from 'react';
 import { PortfolioContent } from '../types';
 import Background from './bg/Background';
 import Constellation from './map/Constellation';
+import Minimap from './map/Minimap';
 import type { Theme } from '../hooks/useApp';
 
 type Lang = 'es' | 'en' | 'cat';
@@ -15,6 +16,7 @@ interface Props {
   lang: Lang;
   setLang: (l: Lang) => void;
   reducedMotion: boolean;
+  active: string | null;
   onOpen: (id: string) => void;
 }
 
@@ -34,6 +36,7 @@ const MapScreen: React.FC<Props> = ({
   lang,
   setLang,
   reducedMotion,
+  active,
   onOpen
 }) => {
   const { meta, ui, nav } = content;
@@ -56,7 +59,13 @@ const MapScreen: React.FC<Props> = ({
             </div>
           }
         >
-          <Scene3D content={content} theme={theme} reducedMotion={reducedMotion} onOpen={onOpen} />
+          <Scene3D
+            content={content}
+            theme={theme}
+            reducedMotion={reducedMotion}
+            focusId={active}
+            onOpen={onOpen}
+          />
         </Suspense>
       ) : (
         <div className="absolute inset-0">
@@ -71,6 +80,9 @@ const MapScreen: React.FC<Props> = ({
 
       {/* ---------- HUD ---------- */}
       <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between p-4 sm:p-6">
+        {webgl && !reducedMotion && (
+          <Minimap content={content} active={active} onJump={onOpen} label={content.ui.mapLabel} />
+        )}
         <div className="flex items-start justify-between">
           <button
             id="navbar-logo"

@@ -101,7 +101,7 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
     },
     ui: {
       scroll: 'Baja para explorar',
-      mapHint: 'Toca un nodo · orbita · zoom',
+      mapHint: 'Arrastra para explorar · pellizca para zoom',
       open: 'Abrir',
       live: 'En producción',
       roleLabel: 'Rol',
@@ -112,7 +112,8 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
       sent: 'Recibido. Respondo en menos de 24 h.',
       error: 'No se pudo enviar. Escríbeme a sergimallenweb@gmail.com.',
       close: 'Cerrar',
-      indexTitle: 'Manifiesto'
+      indexTitle: 'Manifiesto',
+      mapLabel: 'Mapa · estás aquí'
     },
     about: {
       tag: 'Perfil',
@@ -268,7 +269,7 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
     },
     ui: {
       scroll: 'Baixa per explorar',
-      mapHint: 'Toca un node · orbita · zoom',
+      mapHint: 'Arrossega per explorar · pessiga per zoom',
       open: 'Obrir',
       live: 'En producció',
       roleLabel: 'Rol',
@@ -279,7 +280,8 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
       sent: 'Rebut. Responc en menys de 24 h.',
       error: 'No s’ha pogut enviar. Escriu-me a sergimallenweb@gmail.com.',
       close: 'Tancar',
-      indexTitle: 'Manifest'
+      indexTitle: 'Manifest',
+      mapLabel: 'Mapa · ets aquí'
     },
     about: {
       tag: 'Perfil',
@@ -435,7 +437,7 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
     },
     ui: {
       scroll: 'Scroll to explore',
-      mapHint: 'Tap a node · orbit · zoom',
+      mapHint: 'Drag to explore · pinch to zoom',
       open: 'Open',
       live: 'In production',
       roleLabel: 'Role',
@@ -446,7 +448,8 @@ export const TRANSLATIONS: Record<'es' | 'en' | 'cat', PortfolioContent> = {
       sent: 'Received. I reply within 24 h.',
       error: 'Could not send. Email me at sergimallenweb@gmail.com.',
       close: 'Close',
-      indexTitle: 'Manifesto'
+      indexTitle: 'Manifesto',
+      mapLabel: 'Map · you are here'
     },
     about: {
       tag: 'Profile',

@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer-core';
 import fs from 'fs';
 
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const URL = process.env.URL || 'http://localhost:3004/';
+const URL = process.env.URL || 'http://localhost:3000/';
 const OUT = '.impeccable/review';
 fs.mkdirSync(OUT, { recursive: true });
 

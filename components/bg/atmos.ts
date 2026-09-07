@@ -8,6 +8,15 @@ export const atmos = {
   my: 0.5,
   /** camera zoom, 0 (far) .. 1 (close), written by Scene3D */
   zoom: 0.35,
+  /** camera + look target in world space, written by Scene3D (for the minimap) */
+  camX: 0,
+  camY: 0,
+  camZ: 12,
+  tgtX: 0,
+  tgtY: 0,
+  tgtZ: 0,
+  /** last time the user touched the map (ms) — idle drift starts after a pause */
+  lastInput: 0,
   /** accent hue in degrees for the shader (BVB yellow ≈ 48) */
   hue: 48,
   /** 1 = light theme, 0 = dark */
