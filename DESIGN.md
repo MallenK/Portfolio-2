@@ -55,10 +55,26 @@ labels and pop-up headers; 400 / 500 for body. Tabular numerals on counts and pe
 - `Scene3D.tsx` — an R3F `<Canvas>`, lazy-loaded. `graph3d.ts` lifts the 2D constellation into
   3D: hand-placed x/y become the screen-plane spread, z is layered by node kind + a
   deterministic jitter so there is real depth to fly through.
-- **Nodes**: emissive spheres. Core largest, permanent yellow ring (a thin `torusGeometry`),
-  slow spin. Primaries medium, labels via drei `<Html>` with a `· N` count. Satellites small;
-  live project satellites carry a tiny yellow marker. Hover / active → yellow + scale up +
-  lit edges (drei `<Line>`).
+- **Hierarchy**: `core` → 5 `primary` nodes → `satellite` children. **Contacto is a leaf**
+  (no children); Perfil / Proyectos / Experiencia / Servicios each own a cluster. Every node
+  is its own clickable element with its own destination — a satellite click opens the parent
+  section's pop-up *scrolled to and highlighting that specific item* (the `anchor`), and
+  project satellites also carry their real outbound URL. `graph3d.ts` builds this directly
+  from `content` with per-item data on each node.
+- **Nodes have a form derived from what they carry** (`nodes.tsx`) — nothing is a plain
+  sphere:
+  - **core** — faceted icosahedron, gold `<Edges>`, inner glow, two counter-rotating rings,
+    a slow breathing scale.
+  - **perfil** → an **icosahedron** (facets of a person); its skill children are little
+    **cube stacks** whose height is that category's tech count.
+  - **proyectos** → a **cube** (something built); its children are **billboard chips showing
+    the year**, live ones wearing an orbiting yellow ring.
+  - **experiencia** → a **stack of rings** (strata / years); its children are company
+    plates, the current job larger with a gold cap.
+  - **servicios** → a radiating **burst**; its children are **hexagon badges**.
+  - **contacto** → a billboarded **portal ring** you look through — the "door", labelled `→`.
+- Hover any node → it lifts toward the camera, a `<Html>` name card appears (`+ abrir →`),
+  its edge chain lights and the other clusters dim. Active section is dimmed the same way.
 - **Camera** (`<CameraControls>` / `camera-controls`): free flight, like nicoborja.com —
   **left drag trucks the view in every direction**, right drag tumbles to reveal depth,
   wheel / pinch dollies (zoom to cursor); one-finger truck + two-finger dolly-rotate on

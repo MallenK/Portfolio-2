@@ -17,8 +17,12 @@ interface Props {
   setLang: (l: Lang) => void;
   reducedMotion: boolean;
   active: string | null;
-  onOpen: (id: string) => void;
+  focus: string | null;
+  onNode: (id: string, section: string, anchor?: string) => void;
+  onFly: (id: string) => void;
 }
+
+const AREAS = ['perfil', 'proyectos', 'experiencia', 'servicios', 'contacto'] as const;
 
 function hasWebGL(): boolean {
   try {
@@ -37,60 +41,72 @@ const MapScreen: React.FC<Props> = ({
   setLang,
   reducedMotion,
   active,
-  onOpen
+  focus,
+  onNode,
+  onFly
 }) => {
   const { meta, ui, nav } = content;
   const [webgl] = useState(hasWebGL);
+  const fall = (
+    <div className="absolute inset-0">
+      <Constellation
+        content={content}
+        theme={theme}
+        reducedMotion={reducedMotion}
+        onNavigate={(id) => onNode(id, id)}
+      />
+    </div>
+  );
 
   return (
     <div className="relative h-[100svh] w-full overflow-hidden">
       <Background theme={theme} reducedMotion={reducedMotion} />
 
       {webgl ? (
-        <Suspense
-          fallback={
-            <div className="absolute inset-0">
-              <Constellation
-                content={content}
-                theme={theme}
-                reducedMotion={reducedMotion}
-                onNavigate={onOpen}
-              />
-            </div>
-          }
-        >
+        <Suspense fallback={fall}>
           <Scene3D
             content={content}
             theme={theme}
             reducedMotion={reducedMotion}
-            focusId={active}
-            onOpen={onOpen}
+            focusId={focus}
+            activeSection={active}
+            onNode={onNode}
           />
         </Suspense>
       ) : (
-        <div className="absolute inset-0">
-          <Constellation
-            content={content}
-            theme={theme}
-            reducedMotion={reducedMotion}
-            onNavigate={onOpen}
-          />
-        </div>
+        fall
       )}
 
       {/* ---------- HUD ---------- */}
       <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between p-4 sm:p-6">
         {webgl && !reducedMotion && (
-          <Minimap content={content} active={active} onJump={onOpen} label={content.ui.mapLabel} />
+          <Minimap content={content} active={active} onJump={onFly} label={content.ui.mapLabel} />
         )}
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between gap-3">
           <button
             id="navbar-logo"
-            onClick={() => onOpen('core')}
+            onClick={() => onNode('core', 'core')}
             className="pointer-events-auto font-[var(--font-display)] text-sm font-bold uppercase tracking-[0.22em] text-fg [text-shadow:0_0_16px_var(--bg)]"
           >
             {meta.alias}
           </button>
+
+          {/* area pills — fly the camera to a cluster */}
+          <div className="pointer-events-auto hidden items-center gap-1.5 lg:flex">
+            {AREAS.map((a) => (
+              <button
+                key={a}
+                onClick={() => onFly(a)}
+                className={`border px-2.5 py-1 font-[var(--font-display)] text-[10px] font-semibold uppercase tracking-[0.16em] transition-colors ${
+                  active === a
+                    ? 'border-accent bg-accent text-black'
+                    : 'border-hair bg-bg/50 text-fgdim backdrop-blur-sm hover:border-fgdim hover:text-fg'
+                }`}
+              >
+                {nav[a as keyof typeof nav]}
+              </button>
+            ))}
+          </div>
 
           <div className="pointer-events-auto flex items-center gap-3 sm:gap-4">
             <a

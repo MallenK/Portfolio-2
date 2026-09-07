@@ -23,6 +23,8 @@ const AppContent: React.FC = () => {
   const reducedMotion = useReducedMotion();
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState<string | null>(null);
+  const [anchor, setAnchor] = useState<string | null>(null);
+  const [focus, setFocus] = useState<string | null>(null);
   const [lang, setLang] = useState<Lang>(() => {
     if (typeof window === 'undefined') return 'cat';
     return (localStorage.getItem('portfolio-lang') as Lang) || 'cat';
@@ -40,13 +42,27 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(t);
   }, []);
 
-  const openChat = useCallback(() => {
+  const openNode = useCallback((id: string, section: string, anch?: string) => {
+    setFocus(id);
+    setActive(section);
+    setAnchor(anch ?? null);
+  }, []);
+  const flyTo = useCallback((id: string) => {
+    setFocus(id);
+  }, []);
+  const closeAll = useCallback(() => {
     setActive(null);
+    setAnchor(null);
+    setFocus(null);
+  }, []);
+
+  const openChat = useCallback(() => {
+    closeAll();
     setTimeout(
       () => (document.querySelector('[data-chat-toggle]') as HTMLButtonElement | null)?.click(),
       120
     );
-  }, []);
+  }, [closeAll]);
 
   return (
     <>
@@ -84,16 +100,19 @@ const AppContent: React.FC = () => {
                   setLang={setLang}
                   reducedMotion={reducedMotion}
                   active={active}
-                  onOpen={setActive}
+                  focus={focus}
+                  onNode={openNode}
+                  onFly={flyTo}
                 />
               </ClickSpark>
             </div>
 
             <Popup
               nodeId={active}
+              anchor={anchor}
               content={content}
-              onClose={() => setActive(null)}
-              onNavigate={(id) => setActive(id)}
+              onClose={closeAll}
+              onNavigate={(id) => openNode(id, id)}
               onOpenChat={openChat}
             />
 

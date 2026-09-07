@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import emailjs from '@emailjs/browser';
 import { PortfolioContent } from '../types';
 import { SOCIAL_LINKS } from '../constants';
@@ -7,6 +7,7 @@ import ShinyText from './reactbits/ShinyText';
 
 interface Props {
   nodeId: string;
+  anchor: string | null;
   content: PortfolioContent;
   onNavigate: (id: string) => void;
   onOpenChat: () => void;
@@ -60,7 +61,8 @@ const Perfil: React.FC<Props> = ({ content }) => {
           {a.skills.map((g) => (
             <div
               key={g.category}
-              className="grid gap-1.5 border-b border-hair py-4 sm:grid-cols-[8rem_1fr] sm:gap-6"
+              data-anchor={g.category}
+              className="grid gap-1.5 border-b border-hair px-2 py-4 sm:grid-cols-[8rem_1fr] sm:gap-6"
             >
               <span className="font-[var(--font-display)] text-[12px] font-semibold uppercase tracking-[0.12em] text-fg">
                 {g.category}
@@ -89,7 +91,8 @@ const Proyectos: React.FC<Props> = ({ content }) => {
               href={p.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="group block border-b border-hair py-6"
+              data-anchor={p.id}
+              className="group block border-b border-hair px-2 py-6"
             >
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <span className="tag-n">{p.id}</span>
@@ -133,7 +136,10 @@ const Experiencia: React.FC<Props> = ({ content }) => {
       <ol className="border-t border-hair">
         {experience.items.map((e, i) => (
           <Reveal key={e.id} as="li" delay={i * 50}>
-            <div className="grid gap-3 border-b border-hair py-6 sm:grid-cols-[5rem_1fr] sm:gap-8">
+            <div
+              data-anchor={e.id}
+              className="grid gap-3 border-b border-hair px-2 py-6 sm:grid-cols-[5rem_1fr] sm:gap-8"
+            >
               <span className="tag-n">{e.period}</span>
               <div>
                 <h3 className="font-[var(--font-display)] text-[15px] font-semibold text-fg">
@@ -188,19 +194,19 @@ const Servicios: React.FC<Props> = ({ content, onOpenChat }) => {
               </span>
             </>
           );
-          const cls = 'group flex w-full items-start gap-4 border-b border-hair py-5 text-left';
+          const cls = 'group flex w-full items-start gap-4 border-b border-hair px-2 py-5 text-left';
           return (
             <Reveal key={s.title} delay={i * 45}>
               {s.action === 'open-ai-chat' ? (
-                <button className={cls} onClick={onOpenChat}>
+                <button data-anchor={String(i)} className={cls} onClick={onOpenChat}>
                   {inner}
                 </button>
               ) : s.url ? (
-                <a className={cls} href={s.url} target="_blank" rel="noopener noreferrer">
+                <a data-anchor={String(i)} className={cls} href={s.url} target="_blank" rel="noopener noreferrer">
                   {inner}
                 </a>
               ) : (
-                <div className={cls.replace('group ', '')}>{inner}</div>
+                <div data-anchor={String(i)} className={cls.replace('group ', '')}>{inner}</div>
               )}
             </Reveal>
           );
@@ -353,7 +359,7 @@ const Contacto: React.FC<Props> = ({ content }) => {
   );
 };
 
-const PopupContent: React.FC<Props> = (props) => {
+const Body: React.FC<Props> = (props) => {
   switch (props.nodeId) {
     case 'core':
       return <Core {...props} />;
@@ -370,6 +376,28 @@ const PopupContent: React.FC<Props> = (props) => {
     default:
       return null;
   }
+};
+
+const PopupContent: React.FC<Props> = (props) => {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!props.anchor) return;
+    const sel = `[data-anchor="${(window as any).CSS?.escape ? CSS.escape(props.anchor) : props.anchor}"]`;
+    const t = setTimeout(() => {
+      const el = ref.current?.querySelector(sel) as HTMLElement | null;
+      if (!el) return;
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('anchor-hit');
+      setTimeout(() => el.classList.remove('anchor-hit'), 2200);
+    }, 420);
+    return () => clearTimeout(t);
+  }, [props.anchor, props.nodeId]);
+
+  return (
+    <div ref={ref}>
+      <Body {...props} />
+    </div>
+  );
 };
 
 export default PopupContent;

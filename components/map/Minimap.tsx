@@ -10,7 +10,7 @@ interface Props {
   label: string;
 }
 
-const R = 11; // world half-extent shown
+const R = 8; // world half-extent shown (plan uses x/z)
 
 /**
  * Orientation aid — a top-down (x/z) plan of the map with a marker for where
@@ -73,7 +73,7 @@ const Minimap: React.FC<Props> = ({ content, active, onJump, label }) => {
         {nodes.map((n) => {
           const cx = (n.pos[0] / R) * 50 + 50;
           const cy = (n.pos[2] / R) * 50 + 50;
-          const on = active === n.id;
+          const on = active === n.section;
           return (
             <circle
               key={n.id}
@@ -83,7 +83,7 @@ const Minimap: React.FC<Props> = ({ content, active, onJump, label }) => {
               fill={on || n.kind === 'core' ? 'var(--accent)' : 'var(--fg)'}
               opacity={on || n.kind === 'core' ? 1 : 0.78}
               style={{ cursor: 'pointer' }}
-              onClick={() => onJump(n.target)}
+              onClick={() => onJump(n.id)}
             >
               <title>{n.label}</title>
             </circle>

@@ -103,6 +103,20 @@ h1, h2, h3, h4 { margin: 0; font-weight: 700; }
 
 .hair { height: 1px; background: var(--hair); }
 
+/* a popup row jumped to from a node — brief highlight */
+.anchor-hit {
+  animation: anchorHit 2.2s var(--ease-out);
+}
+@keyframes anchorHit {
+  0%,
+  30% {
+    background: color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
 /* ---- reveal (used inside popups) ---- */
 .reveal {
   opacity: 0;

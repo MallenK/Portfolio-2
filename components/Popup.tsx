@@ -6,6 +6,7 @@ import AnimatedContent from './reactbits/AnimatedContent';
 
 interface Props {
   nodeId: string | null;
+  anchor: string | null;
   content: PortfolioContent;
   onClose: () => void;
   onNavigate: (id: string) => void;
@@ -40,7 +41,7 @@ const NUM: Record<string, string> = {
   contacto: '05'
 };
 
-const Popup: React.FC<Props> = ({ nodeId, content, onClose, onNavigate, onOpenChat }) => {
+const Popup: React.FC<Props> = ({ nodeId, anchor, content, onClose, onNavigate, onOpenChat }) => {
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -108,6 +109,7 @@ const Popup: React.FC<Props> = ({ nodeId, content, onClose, onNavigate, onOpenCh
               <AnimatedContent distance={24} duration={0.55} className="px-5 py-7 sm:px-8 sm:py-9">
                 <PopupContent
                   nodeId={nodeId}
+                  anchor={anchor}
                   content={content}
                   onNavigate={onNavigate}
                   onOpenChat={onOpenChat}
