@@ -63,8 +63,10 @@ labels and pop-up headers; 400 / 500 for body. Tabular numerals on counts and pe
   from `content` with per-item data on each node.
 - **Nodes have a form derived from what they carry** (`nodes.tsx`) — nothing is a plain
   sphere:
-  - **core** — faceted icosahedron, gold `<Edges>`, inner glow, two counter-rotating rings,
-    a slow breathing scale.
+  - **core** — **"Nudo de energía"**: a torus knot (`2,3`) running a custom GLSL shader —
+    a flowing fbm energy band with bright sparks over dark valleys, plus a fresnel rim — a
+    fresnel halo shell, an inner bare-gold seed and a wide soft glow. Tumbles on two axes,
+    breathes. Bloom pushes the band to a glow.
   - **perfil** → an **icosahedron** (facets of a person); its skill children are little
     **cube stacks** whose height is that category's tech count.
   - **proyectos** → a **cube** (something built); its children are **billboard chips showing
@@ -72,7 +74,10 @@ labels and pop-up headers; 400 / 500 for body. Tabular numerals on counts and pe
   - **experiencia** → a **stack of rings** (strata / years); its children are company
     plates, the current job larger with a gold cap.
   - **servicios** → a radiating **burst**; its children are **hexagon badges**.
-  - **contacto** → a billboarded **portal ring** you look through — the "door", labelled `→`.
+  - **contacto** → **"Singularidad"**: an event horizon — a bright core, an orbiting
+    accretion disc (GLSL, sheared by time), and a faint gravitational-lens shell. Additive
+    gold on dark; on the light theme it flips to normal blending in darker gold so it still
+    reads on paper. Labelled `→`.
 - Hover any node → it lifts toward the camera, a `<Html>` name card appears (`+ abrir →`),
   its edge chain lights and the other clusters dim. Active section is dimmed the same way.
 - **Camera** (`<CameraControls>` / `camera-controls`): free flight, like nicoborja.com —

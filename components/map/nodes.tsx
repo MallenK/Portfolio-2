@@ -6,6 +6,118 @@ import type { GNode3D } from './graph3d';
 
 const ACCENT = '#fde100';
 
+/* compact 3D value-noise for the flow shaders */
+const NOISE = /* glsl */ `
+  vec3 h3(vec3 p){ p=vec3(dot(p,vec3(127.1,311.7,74.7)),dot(p,vec3(269.5,183.3,246.1)),dot(p,vec3(113.5,271.9,124.6)));
+    return fract(sin(p)*43758.5453123); }
+  float vn(vec3 x){ vec3 i=floor(x); vec3 f=fract(x); f=f*f*(3.-2.*f);
+    return mix(mix(mix(h3(i).x,h3(i+vec3(1,0,0)).x,f.x),mix(h3(i+vec3(0,1,0)).x,h3(i+vec3(1,1,0)).x,f.x),f.y),
+               mix(mix(h3(i+vec3(0,0,1)).x,h3(i+vec3(1,0,1)).x,f.x),mix(h3(i+vec3(0,1,1)).x,h3(i+vec3(1,1,1)).x,f.x),f.y),f.z); }
+  float fbm3(vec3 p){ float a=.5,s=0.; for(int i=0;i<4;i++){ s+=a*vn(p); p*=2.03; a*=.5; } return s; }
+`;
+
+/* additive radial-gradient glow billboard */
+const GlowSprite: React.FC<{ size: number; opacity: number; color?: string; additive?: boolean }> = ({
+  size,
+  opacity,
+  color = ACCENT,
+  additive = true
+}) => {
+  const tex = useMemo(() => {
+    const c = document.createElement('canvas');
+    c.width = c.height = 128;
+    const ctx = c.getContext('2d')!;
+    const col = new THREE.Color(color);
+    const rgb = `${(col.r * 255) | 0},${(col.g * 255) | 0},${(col.b * 255) | 0}`;
+    const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    g.addColorStop(0, `rgba(${rgb},0.9)`);
+    g.addColorStop(0.4, `rgba(${rgb},0.24)`);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 128, 128);
+    return new THREE.CanvasTexture(c);
+  }, [color]);
+  return (
+    <sprite scale={size}>
+      <spriteMaterial
+        map={tex}
+        transparent
+        opacity={opacity}
+        depthWrite={false}
+        blending={additive ? THREE.AdditiveBlending : THREE.NormalBlending}
+        toneMapped={false}
+      />
+    </sprite>
+  );
+};
+
+/* ---------- Singularidad — the Contacto node ----------
+   an event horizon: a bright core, an orbiting accretion disc that shears with time,
+   and a faint gravitational lens. Non-additive + darker gold on the light theme. */
+const Singularity: React.FC<{ lit: boolean; theme: 'dark' | 'light' }> = ({ lit, theme }) => {
+  const g = useRef<THREE.Group>(null);
+  const disc = useRef<THREE.Mesh>(null);
+  const light = theme === 'light';
+  const gold = light ? '#8a6d00' : ACCENT;
+
+  const discMat = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        transparent: true,
+        side: THREE.DoubleSide,
+        blending: light ? THREE.NormalBlending : THREE.AdditiveBlending,
+        depthWrite: false,
+        uniforms: { uT: { value: 0 }, uGold: { value: new THREE.Color(gold) }, uA: { value: light ? 0.9 : 0.55 } },
+        vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
+        fragmentShader: `varying vec2 vUv; uniform float uT; uniform vec3 uGold; uniform float uA;
+          void main(){
+            float a = sin(vUv.x*44.0 - uT*4.0)*0.5 + 0.5;
+            a *= smoothstep(0.0,0.28,vUv.y) * smoothstep(1.0,0.72,vUv.y);
+            gl_FragColor = vec4(uGold, a*uA);
+          }`
+      }),
+    [light, gold]
+  );
+  const lensMat = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        transparent: true,
+        blending: light ? THREE.NormalBlending : THREE.AdditiveBlending,
+        depthWrite: false,
+        uniforms: { uGold: { value: new THREE.Color(gold) }, uA: { value: light ? 0.4 : 0.28 } },
+        vertexShader: `varying vec3 vN; varying vec3 vP;
+          void main(){ vN=normalize(normalMatrix*normal); vec4 mv=modelViewMatrix*vec4(position,1.); vP=mv.xyz; gl_Position=projectionMatrix*mv; }`,
+        fragmentShader: `varying vec3 vN; varying vec3 vP; uniform vec3 uGold; uniform float uA;
+          void main(){ vec3 V=normalize(-vP); float f=pow(1.-abs(dot(vN,V)),4.0); gl_FragColor=vec4(uGold, f*uA); }`
+      }),
+    [light, gold]
+  );
+  useFrame((state, dt) => {
+    discMat.uniforms.uT.value = state.clock.elapsedTime;
+    if (disc.current) disc.current.rotation.z += dt * 0.4;
+    if (g.current) {
+      g.current.rotation.y += dt * 0.06;
+      const s = THREE.MathUtils.damp(g.current.scale.x, lit ? 0.58 : 0.48, 9, dt);
+      g.current.scale.setScalar(s);
+    }
+  });
+  return (
+    <group ref={g} scale={0.48}>
+      <mesh>
+        <sphereGeometry args={[light ? 0.11 : 0.09, 20, 20]} />
+        <meshBasicMaterial color={gold} toneMapped={false} />
+      </mesh>
+      <GlowSprite size={light ? 0.5 : 0.62} opacity={light ? 0.32 : 0.5} color={gold} additive={!light} />
+      <mesh ref={disc} rotation={[Math.PI / 2 - 0.36, 0, 0]} material={discMat}>
+        <ringGeometry args={[0.3, 0.64, 80]} />
+      </mesh>
+      <mesh material={lensMat}>
+        <sphereGeometry args={[0.9, 40, 40]} />
+      </mesh>
+    </group>
+  );
+};
+
 /* ============================================================ CLUSTER DUST
    a drifting particle haze around each primary so clusters read as nebulae */
 export const ClusterDust: React.FC<{
@@ -151,46 +263,89 @@ const NameCard: React.FC<{
   </Html>
 );
 
-/* ============================================================ CORE */
+/* ============================================================ CORE — "Nudo de energía"
+   a torus knot carrying a flowing fbm energy band + a fresnel rim, slow tumble + breathing */
 export const CoreNode: React.FC<Common> = ({ n, theme, onNode, onHover }) => {
   const g = useRef<THREE.Group>(null);
-  const r1 = useRef<THREE.Mesh>(null);
-  const r2 = useRef<THREE.Mesh>(null);
+  const knot = useRef<THREE.Mesh>(null);
+  const halo = useRef<THREE.Mesh>(null);
   const { hovered, bind } = useHover(onHover, n.id);
 
+  const knotMat = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        uniforms: {
+          uT: { value: 0 },
+          uGold: { value: new THREE.Color(ACCENT) },
+          uDark: { value: new THREE.Color(theme === 'light' ? '#20201a' : '#0d0d0a') }
+        },
+        vertexShader: `varying vec2 vUv; varying vec3 vN; varying vec3 vP;
+          void main(){ vUv=uv; vN=normalize(normalMatrix*normal);
+            vec4 mv=modelViewMatrix*vec4(position,1.); vP=mv.xyz;
+            gl_Position=projectionMatrix*mv; }`,
+        fragmentShader:
+          NOISE +
+          `varying vec2 vUv; varying vec3 vN; varying vec3 vP;
+           uniform float uT; uniform vec3 uGold; uniform vec3 uDark;
+           void main(){
+             float flow = fbm3(vec3(vUv*vec2(9.0,2.2) - vec2(uT*0.7,0.0), uT*0.12));
+             float band = smoothstep(0.40,0.72,flow);
+             float spark = smoothstep(0.86,0.98,flow);
+             vec3 V = normalize(-vP);
+             float fres = pow(1.0 - max(dot(vN,V),0.0), 2.4);
+             vec3 col = mix(uDark, uGold, band) + uGold*fres*0.5 + uGold*spark*0.9;
+             gl_FragColor = vec4(col,1.0);
+           }`
+      }),
+    [theme]
+  );
+
+  const haloMat = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        uniforms: { uGold: { value: new THREE.Color(ACCENT) } },
+        vertexShader: `varying vec3 vN; varying vec3 vP;
+          void main(){ vN=normalize(normalMatrix*normal);
+            vec4 mv=modelViewMatrix*vec4(position,1.); vP=mv.xyz;
+            gl_Position=projectionMatrix*mv; }`,
+        fragmentShader: `varying vec3 vN; varying vec3 vP; uniform vec3 uGold;
+          void main(){ vec3 V=normalize(-vP);
+            float f=pow(1.0-abs(dot(vN,V)),3.0);
+            gl_FragColor=vec4(uGold, f*0.3); }`
+      }),
+    []
+  );
+
   useFrame((state, dt) => {
-    if (g.current) {
-      g.current.rotation.y += dt * 0.18;
-      const b = 1 + Math.sin(state.clock.elapsedTime * 1.4) * 0.04;
-      g.current.scale.setScalar(THREE.MathUtils.damp(g.current.scale.x, (hovered ? 1.15 : 1) * b, 8, dt));
+    knotMat.uniforms.uT.value = state.clock.elapsedTime;
+    if (knot.current) {
+      knot.current.rotation.y += dt * 0.22;
+      knot.current.rotation.x += dt * 0.11;
     }
-    if (r1.current) r1.current.rotation.z += dt * 0.5;
-    if (r2.current) {
-      r2.current.rotation.x += dt * 0.35;
-      r2.current.rotation.y -= dt * 0.2;
+    if (halo.current) halo.current.rotation.y -= dt * 0.15;
+    if (g.current) {
+      const b = 1 + Math.sin(state.clock.elapsedTime * 1.4) * 0.04;
+      g.current.scale.setScalar(THREE.MathUtils.damp(g.current.scale.x, (hovered ? 1.14 : 1) * b, 8, dt));
     }
   });
 
   return (
     <group ref={g} position={n.pos} {...bind} onClick={(e) => { e.stopPropagation(); onNode(n.id, 'core'); }}>
-      <mesh>
-        <icosahedronGeometry args={[0.5, 1]} />
-        <meshStandardMaterial color="#1a1a12" emissive={ACCENT} emissiveIntensity={0.5} roughness={0.35} metalness={0.2} />
-        <Edges color={ACCENT} threshold={12} />
+      <mesh ref={knot} material={knotMat}>
+        <torusKnotGeometry args={[0.42, 0.135, 220, 28, 2, 3]} />
       </mesh>
-      <mesh scale={0.42}>
+      <mesh scale={0.32}>
         <sphereGeometry args={[0.5, 20, 20]} />
         <meshBasicMaterial color={ACCENT} toneMapped={false} />
       </mesh>
-      <mesh ref={r1} rotation={[Math.PI / 2.4, 0, 0]}>
-        <torusGeometry args={[0.92, 0.012, 10, 80]} />
-        <meshBasicMaterial color={ACCENT} toneMapped={false} transparent opacity={0.9} />
+      <mesh ref={halo} material={haloMat} scale={1.15}>
+        <sphereGeometry args={[0.8, 40, 40]} />
       </mesh>
-      <mesh ref={r2} rotation={[0, 0, Math.PI / 3]}>
-        <torusGeometry args={[1.12, 0.007, 8, 80]} />
-        <meshBasicMaterial color={ACCENT} toneMapped={false} transparent opacity={0.45} />
-      </mesh>
-      {hovered && <NameCard text={n.label} sub="manifiesto" y={1.7} theme={theme} />}
+      <GlowSprite size={1.6} opacity={theme === 'light' ? 0.1 : 0.16} additive={theme !== 'light'} />
+      {hovered && <NameCard text={n.label} sub="manifiesto" y={1.5} theme={theme} />}
     </group>
   );
 };
@@ -273,18 +428,7 @@ export const PrimaryNode: React.FC<Common> = ({ n, theme, active, dim, onNode, o
           })}
         </group>
       )}
-      {n.shape === 'portal' && (
-        <Billboard>
-          <mesh ref={spin}>
-            <torusGeometry args={[0.36, 0.03, 14, 60]} />
-            <meshStandardMaterial color={lit ? ACCENT : base} emissive={ACCENT} emissiveIntensity={lit ? 1.4 : 0.6} roughness={0.3} />
-          </mesh>
-          <mesh scale={lit ? 0.9 : 0.7}>
-            <circleGeometry args={[0.33, 32]} />
-            <meshBasicMaterial color={ACCENT} toneMapped={false} transparent opacity={lit ? 0.22 : 0.1} />
-          </mesh>
-        </Billboard>
-      )}
+      {n.shape === 'portal' && <Singularity lit={lit} theme={theme} />}
 
       {/* persistent small label + count */}
       <Html center position={[0, n.shape === 'strata' ? 0.72 : 0.62, 0]} distanceFactor={13} style={{ pointerEvents: 'none' }} zIndexRange={[15, 0]}>
