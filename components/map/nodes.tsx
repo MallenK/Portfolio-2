@@ -8,8 +8,8 @@ import { iconForCategory, iconTexture, PERFIL_CATEGORIES } from './techIcons';
 const ACCENT = '#fde100';
 
 /* the core keeps its size; the rest of the graph reads larger */
-const PRIMARY_SCALE = 1.42;
-const SAT_SCALE = 1.5;
+const PRIMARY_SCALE = 1.92;
+const SAT_SCALE = 1.9;
 
 /* compact 3D value-noise for the flow shaders */
 const NOISE = /* glsl */ `
